@@ -18,7 +18,7 @@ if ! command -v brew &> /dev/null; then
 fi
 
 # ---------------------------------
-# Update brew
+# Update Homebrew
 # ---------------------------------
 
 echo "Updating Homebrew..."
@@ -36,6 +36,58 @@ else
   echo "Installing missing Brewfile packages..."
   brew bundle --file="$HOME/dotfiles/Brewfile"
 fi
+
+# ---------------------------------
+# Setup GitHub SSH
+# ---------------------------------
+
+echo "Configuring GitHub SSH..."
+
+SSH_KEY="$HOME/.ssh/id_ed25519"
+
+if [ ! -f "$SSH_KEY" ]; then
+  echo "Generating SSH key..."
+  ssh-keygen -t ed25519 -C "github" -f "$SSH_KEY" -N ""
+else
+  echo "SSH key already exists."
+fi
+
+# Start ssh-agent
+eval "$(ssh-agent -s)"
+
+# Add key to agent
+ssh-add "$SSH_KEY" || true
+
+# Ensure ssh config exists
+mkdir -p ~/.ssh
+
+SSH_CONFIG="$HOME/.ssh/config"
+
+if ! grep -q "github.com" "$SSH_CONFIG" 2>/dev/null; then
+
+cat <<EOF >> "$SSH_CONFIG"
+
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519
+  AddKeysToAgent yes
+  UseKeychain yes
+
+EOF
+
+echo "GitHub SSH config added."
+
+else
+  echo "GitHub SSH config already present."
+fi
+
+echo ""
+echo "Add this SSH key to GitHub:"
+echo "https://github.com/settings/keys"
+echo ""
+
+cat ~/.ssh/id_ed25519.pub
 
 # ---------------------------------
 # Apply dotfiles with stow
@@ -70,4 +122,5 @@ if [ -f "$HOME/dotfiles/macos/macos.sh" ]; then
   bash "$HOME/dotfiles/macos/macos.sh"
 fi
 
+echo ""
 echo "Bootstrap completed successfully!"

@@ -1,5 +1,15 @@
 [user]
-	name = Carlos Chong
-	email = carlos.chong@intechideas.com
+  name = Carlos Chong
+  email = carlos.chong@intechideas.com
+
 [core]
-	editor = nano
+  editor = nano
+
+[pull]
+  rebase = true
+
+[init]
+  defaultBranch = main
+
+[url "git@github.com:"]
+  insteadOf = https://github.com/
