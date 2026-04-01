@@ -1,27 +1,73 @@
 #!/bin/bash
 
-echo "Installing Homebrew..."
+set -euo pipefail
 
-if ! command -v brew &> /dev/null
-then
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo "Starting DevOps machine bootstrap..."
+
+# ---------------------------------
+# Install Homebrew if missing
+# ---------------------------------
+
+if ! command -v brew &> /dev/null; then
+  echo "Installing Homebrew..."
+
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
+# ---------------------------------
+# Update brew
+# ---------------------------------
+
 echo "Updating Homebrew..."
-brew update
+brew update --quiet
 
-echo "Installing packages from Brewfile..."
-brew bundle --file=~/dotfiles/Brewfile
+# ---------------------------------
+# Install Brewfile packages
+# ---------------------------------
 
-echo "Creating config directories..."
+echo "Checking Brewfile packages..."
 
-mkdir -p ~/.config/ghostty
-mkdir -p ~/.config/fastfetch
+if brew bundle check --file="$HOME/dotfiles/Brewfile"; then
+  echo "All Brewfile dependencies are satisfied."
+else
+  echo "Installing missing Brewfile packages..."
+  brew bundle --file="$HOME/dotfiles/Brewfile"
+fi
 
-echo "Copying dotfiles..."
+# ---------------------------------
+# Apply dotfiles with stow
+# ---------------------------------
 
-cp .zshrc ~/.zshrc
-cp ghostty/config ~/.config/ghostty/config
-cp fastfetch/config.jsonc ~/.config/fastfetch/config.jsonc
+echo "Applying dotfiles..."
 
-echo "Bootstrap complete!"
+cd "$HOME/dotfiles"
+
+for pkg in */ ; do
+  pkg=${pkg%/}
+
+  if [[ "$pkg" == "macos" ]]; then
+    continue
+  fi
+
+  if [[ "$pkg" == ".git" ]]; then
+    continue
+  fi
+
+  echo "Stowing $pkg..."
+  stow -R --adopt "$pkg"
+
+done
+
+# ---------------------------------
+# Apply macOS configuration
+# ---------------------------------
+
+if [ -f "$HOME/dotfiles/macos/macos.sh" ]; then
+  echo "Applying macOS configuration..."
+  bash "$HOME/dotfiles/macos/macos.sh"
+fi
+
+echo "Bootstrap completed successfully!"
