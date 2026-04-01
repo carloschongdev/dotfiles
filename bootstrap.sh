@@ -40,6 +40,9 @@ fi
 # ---------------------------------
 # Setup GitHub SSH
 # ---------------------------------
+# ---------------------------------
+# Setup GitHub SSH
+# ---------------------------------
 
 echo "Configuring GitHub SSH..."
 
@@ -82,12 +85,25 @@ else
   echo "GitHub SSH config already present."
 fi
 
+# ---------------------------------
+# Copy public key to clipboard
+# ---------------------------------
+
+if command -v pbcopy &> /dev/null; then
+  pbcopy < ~/.ssh/id_ed25519.pub
+  echo ""
+  echo "Your SSH public key has been copied to the clipboard."
+else
+  echo ""
+  echo "Clipboard utility not found. Here is your SSH key:"
+  cat ~/.ssh/id_ed25519.pub
+fi
+
 echo ""
-echo "Add this SSH key to GitHub:"
+echo "Add the key to GitHub:"
 echo "https://github.com/settings/keys"
 echo ""
-
-cat ~/.ssh/id_ed25519.pub
+echo "Just paste it there (Cmd + V)."
 
 # ---------------------------------
 # Apply dotfiles with stow
