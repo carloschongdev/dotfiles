@@ -15,4 +15,4 @@
   insteadOf = https://github.com/
   
 [alias]
-	ac = add -A && commit
+	ac = !git add -A && git commit
