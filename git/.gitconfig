@@ -16,3 +16,4 @@
   
 [alias]
 	ac = !git add -A && git commit
+	sync = !git add -A && git commit -m \"sync\" && git pull --rebase && git push
