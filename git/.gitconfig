@@ -13,3 +13,6 @@
 
 [url "git@github.com:"]
   insteadOf = https://github.com/
+  
+[alias]
+	ac = add -A && commit
