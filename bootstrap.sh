@@ -7,18 +7,11 @@ then
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-echo "Installing CLI tools..."
+echo "Updating Homebrew..."
+brew update
 
-brew install git
-brew install kubectl
-brew install starship
-brew install fastfetch
-
-echo "Installing applications..."
-
-brew install --cask ghostty
-brew install --cask docker
-brew install --cask font-jetbrains-mono-nerd-font
+echo "Installing packages from Brewfile..."
+brew bundle --file=~/dotfiles/Brewfile
 
 echo "Creating config directories..."
 

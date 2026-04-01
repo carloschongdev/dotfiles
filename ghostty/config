@@ -9,4 +9,7 @@ background = #000000
 foreground = #ffffff
 background-opacity = 0.85
 
+selection-background = #5b3cc4
+selection-foreground = #ffffff
+
 cursor-style = block

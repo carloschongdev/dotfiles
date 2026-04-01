@@ -10,6 +10,12 @@ cask "docker-desktop"
 cask "font-jetbrains-mono-nerd-font"
 cask "ghostty"
 cask "visual-studio-code"
+cask "spotify"
+cask "google-chrome"
+cask "brave-browser"
+cask "appcleaner"
+cask "hiddenbar"
+cask "chatpgt"
 mas "Brother iPrint&Scan", id: 1193539993
 mas "CapCut", id: 1500855883
 mas "CleanMyKeyboard", id: 6468120888
