@@ -1,3 +1,5 @@
 [user]
 	name = Carlos Chong
 	email = carlos.chong@intechideas.com
+[core]
+	editor = nano
