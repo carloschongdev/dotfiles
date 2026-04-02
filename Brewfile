@@ -5,6 +5,7 @@
 brew "bash"
 brew "git"
 brew "git-gui"
+brew "stow"
 
 ############################################
 # DevOps CLI Tools
@@ -65,6 +66,7 @@ cask "ghostty"
 ############################################
 
 cask "appcleaner"
+cask "rectangle"
 
 ############################################
 # Media

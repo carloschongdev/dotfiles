@@ -1,4 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Ask for the administrator password upfront
+sudo -v
+
+# Keep sudo alive while the script is running
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
 
 set -euo pipefail
 
@@ -104,6 +114,16 @@ echo "Add the key to GitHub:"
 echo "https://github.com/settings/keys"
 echo ""
 echo "Just paste it there (Cmd + V)."
+
+# ---------------------------------
+# Verify required tools
+# ---------------------------------
+
+if ! command -v stow &> /dev/null; then
+  echo "Error: GNU Stow is required but not installed."
+  echo "Please ensure 'stow' exists in the Brewfile."
+  exit 1
+fi
 
 # ---------------------------------
 # Apply dotfiles with stow
