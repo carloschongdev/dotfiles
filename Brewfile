@@ -6,6 +6,7 @@ brew "bash"
 brew "git"
 brew "git-gui"
 brew "stow"
+brew "tree"
 
 ############################################
 # DevOps CLI Tools
@@ -73,6 +74,7 @@ cask "rectangle"
 ############################################
 
 cask "spotify"
+cask "vlc"
 
 ############################################
 # Mac App Store Applications
