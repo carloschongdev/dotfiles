@@ -1,0 +1,52 @@
+{
+  //"terminal.integrated.defaultProfile.windows": "Git Bash", //Terminal
+   "workbench.colorTheme": "Bearded Theme Black & Amethyst", //Tema
+  "workbench.sideBar.location": "right", //Localizacion del menu
+  "workbench.iconTheme": "material-icon-theme", //Iconos
+  "editor.fontFamily": "JetBrains Mono", //Fuente usada en el editor (tipografía optimizada para programación)
+  //"editor.fontSize": 14, //Tamaño de letra
+  "editor.fontLigatures": true, //Activa ligaduras tipográficas para operadores (=>, !=, ==, etc.) si la fuente lo soporta
+  //"editor.cursorSmoothCaretAnimation": true, //Hace que el cursor se desplace suavemente entre posiciones al escribir o moverse
+  //"editor.smoothScrolling": true, //Activa desplazamiento suave al hacer scroll en el código
+  "terminal.integrated.fontSize": 14, //Tamaño de la fuente dentro de la terminal integrada de VSCode
+  "editor.minimap.enabled": false, //Mini Mapa
+  "editor.scrollbar.vertical": "auto", //Barra desplazadora
+  "editor.overviewRulerBorder": false, //Barra gris
+  "editor.hideCursorInOverviewRuler": true, //Linea azul de posicion
+  "editor.formatOnSave": true, //Formateo del archivo al guardar
+  "editor.guides.indentation": false, //Deshabilitar identacion de vscode
+  "indenticator.width": 1, //Linea identicacion 1 or 0.1
+  "indenticator.color.dark": "rgba(255,255,255,0.1)", //Color de linea
+  "[python]": {
+    "editor.formatOnType": true
+  },
+  "editor.matchBrackets": "never", //Extension subtle match
+  "breadcrumbs.enabled": false, //Migajas de pan
+  "editor.glyphMargin": false, //Puntos rojos depurador
+  "explorer.confirmDragAndDrop": false, //Mover archivos
+  "editor.linkedEditing": true, //Actualiza el tag automatico
+  //"liveServer.settings.donotShowInfoMsg": true, //Desactiva la notificacion
+  "files.autoSaveDelay": 1000, //Tiempo de espera de guardado ms
+  "files.autoSave": "afterDelay", //Autoguardado
+  //"vsicons.dontShowNewVersionMessage": true, //Desactiva notificacion de update
+  "security.workspace.trust.untrustedFiles": "open",
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "console-ninja.featureSet": "Community",
+  "editor.tokenColorCustomizations": {
+    // "comments": "#FFFFFF", // Cambia comentarios a blanco
+    //  "functions": "#eb7c21", // Cambia funciones naranja
+    // "strings": "#26ff00", // Cambia textos entre comillas "texto" o 'texto' (verde)
+    "strings": "#e15989", // Cambia textos entre comillas "texto" o 'texto' 
+    //  "variables": "#a73af5", // Cambia variables a morado
+  },
+  "redhat.telemetry.enabled": true,
+  "explorer.confirmDelete": false,
+  //"workbench.colorTheme": "Bearded Theme Black & Diamond",
+  //"workbench.colorCustomizations": 
+  //{
+  //"editor.background": "#101010", // Cambia el fondo a negro
+  //"editor.foreground": "#D4D4D4"  // Cambia el color del texto general del editor (gris claro)
+  //}
+}
