@@ -1,4 +1,13 @@
 ############################################
+# Homebrew taps
+############################################
+
+tap "homebrew/core"
+tap "homebrew/cask"
+tap "homebrew/cask-fonts"
+tap "homebrew/services"
+
+############################################
 # Core CLI Tools
 ############################################
 
@@ -77,6 +86,12 @@ cask "spotify"
 cask "vlc"
 
 ############################################
+# VPN
+############################################
+
+cask "surfshark"
+
+############################################
 # Mac App Store Applications
 ############################################
 
@@ -88,5 +103,5 @@ mas "CapCut", id: 1500855883
 mas "WidgetWall", id: 1618466427
 mas "CleanMyKeyboard", id: 6468120888
 mas "Brother iPrint&Scan", id: 1193539993
-mas "Unzip - RAR ZIP 7Z Unarchiver", id: 1537056818
-mas "Mi papel tapiz", id: 1552826194
+# mas "Unzip - RAR ZIP 7Z Unarchiver", id: 1537056818
+# mas "Mi papel tapiz", id: 1552826194
