@@ -6,3 +6,4 @@
 PROMPT='%~ $ '
 eval "$(starship init zsh)"
 fastfetch
+
