@@ -38,6 +38,7 @@ brew "bat"             # better cat
 brew "eza"             # better ls
 brew "fastfetch"       # system info
 brew "mole"            # SSH tunneling helper
+brew "dockutil"        # automate macOS Dock (apps, order, layout)
 
 ############################################
 # macOS App Store CLI
@@ -57,6 +58,8 @@ cask "font-jetbrains-mono-nerd-font"
 
 cask "visual-studio-code"
 cask "docker-desktop"
+cask "linear"
+cask "claude"
 
 ############################################
 # Browsers
