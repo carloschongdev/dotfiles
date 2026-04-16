@@ -48,6 +48,17 @@ else
 fi
 
 # ---------------------------------
+# Install Claude Code CLI
+# ---------------------------------
+echo "Installing Claude Code CLI..."
+if ! command -v claude &> /dev/null; then
+  curl -fsSL https://claude.ai/install.sh | bash
+  echo "Claude Code CLI installed."
+else
+  echo "Claude Code CLI already installed."
+fi
+
+# ---------------------------------
 # Setup GitHub SSH
 # ---------------------------------
 
