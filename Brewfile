@@ -2,8 +2,6 @@
 # Homebrew taps
 ############################################
 
-tap "homebrew/core"
-tap "homebrew/cask"
 tap "homebrew/cask-fonts"
 tap "homebrew/services"
 
@@ -13,7 +11,6 @@ tap "homebrew/services"
 
 brew "bash"
 brew "git"
-brew "git-gui"
 brew "stow"
 brew "tree"
 
@@ -22,8 +19,8 @@ brew "tree"
 ############################################
 
 brew "gh"              # GitHub CLI
-brew "kubernetes-cli"  # kubectl
-brew "k9s"             # Kubernetes terminal UI
+brew "kubernetes-cli"  # kubectl                  [work]
+brew "k9s"             # Kubernetes terminal UI   [work]
 brew "jq"              # JSON processor
 brew "ripgrep"         # fast search tool (rg)
 
@@ -37,8 +34,8 @@ brew "zoxide"          # smarter cd
 brew "bat"             # better cat
 brew "eza"             # better ls
 brew "fastfetch"       # system info
-brew "mole"            # SSH tunneling helper
-brew "dockutil"        # automate macOS Dock (apps, order, layout)
+brew "mole"            # SSH tunneling helper     [work]
+brew "dockutil"        # automate macOS Dock
 
 ############################################
 # macOS App Store CLI
@@ -47,7 +44,7 @@ brew "dockutil"        # automate macOS Dock (apps, order, layout)
 brew "mas"
 
 ############################################
-# Terminal / Fonts
+# Fonts
 ############################################
 
 cask "font-jetbrains-mono-nerd-font"
@@ -57,8 +54,8 @@ cask "font-jetbrains-mono-nerd-font"
 ############################################
 
 cask "visual-studio-code"
-cask "docker-desktop"
-cask "linear"
+cask "docker-desktop"                          # [work]
+cask "linear"                                  # [work]
 cask "claude"
 
 ############################################
@@ -78,11 +75,11 @@ cask "ghostty"
 # Utilities
 ############################################
 
-cask "appcleaner"
+cask "appcleaner"                              # [personal]
 cask "rectangle"
 
 ############################################
-# Media
+# Media                                    [personal]
 ############################################
 
 cask "spotify"
@@ -99,10 +96,10 @@ cask "surfshark"
 ############################################
 
 mas "Xcode", id: 497799835
-mas "WhatsApp", id: 310633997
+mas "WhatsApp", id: 310633997                  # [personal]
 mas "The Unarchiver", id: 425424353
 mas "Hidden Bar", id: 1452453066
-mas "CapCut", id: 1500855883
+mas "CapCut", id: 1500855883                   # [personal]
 mas "WidgetWall", id: 1618466427
 mas "CleanMyKeyboard", id: 6468120888
 mas "Brother iPrint&Scan", id: 1193539993

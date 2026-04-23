@@ -1,0 +1,73 @@
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ~='cd ~'
+
+# File listing (eza)
+alias ls='eza'
+alias ll='eza -la --git'
+alias la='eza -a'
+alias lt='eza --tree --level=2'
+
+# Better defaults
+alias cat='bat'
+alias grep='grep --color=auto'
+alias cp='cp -iv'
+alias mv='mv -iv'
+alias mkdir='mkdir -pv'
+
+# System
+alias c='clear'
+alias reload='source ~/.zshrc'
+alias myip='curl -s https://ipinfo.io/ip'
+alias ports='lsof -i -P -n | grep LISTEN'
+alias path='echo $PATH | tr ":" "\n"'
+
+# Homebrew
+alias bup='brew update && brew upgrade && brew cleanup'
+alias bls='brew list'
+
+# Git
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gpl='git pull'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate --all'
+alias gb='git branch'
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gst='git stash'
+alias gstp='git stash pop'
+
+# Editor
+alias v='code .'
+alias vi='code'
+
+# Docker
+alias d='docker'
+alias dc='docker compose'
+alias dps='docker ps'
+alias dpa='docker ps -a'
+alias di='docker images'
+alias dex='docker exec -it'
+alias dlog='docker logs -f'
+alias dprune='docker system prune -af'
+
+# Kubernetes
+alias k='kubectl'
+alias kg='kubectl get'
+alias kd='kubectl describe'
+alias kl='kubectl logs -f'
+alias ka='kubectl apply -f'
+alias kdel='kubectl delete'
+alias kns='kubectl config set-context --current --namespace'
+alias kctx='kubectl config use-context'
+alias kcx='kubectl config get-contexts'
+
+# macOS
+alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder'
+alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder'
+alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'

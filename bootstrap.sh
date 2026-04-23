@@ -1,135 +1,98 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Ask for the administrator password upfront
+DOTFILES_DIR="$HOME/dotfiles"
+
+source "$DOTFILES_DIR/lib/logging.sh"
+
+# Ask for the administrator password upfront and keep it alive
 sudo -v
-
-# Keep sudo alive while the script is running
 while true; do
   sudo -n true
   sleep 60
   kill -0 "$$" || exit
 done 2>/dev/null &
 
-set -euo pipefail
+log "Starting DevOps machine bootstrap..."
 
-echo "Starting DevOps machine bootstrap..."
+# ---------------------------------
+# Profile detection
+# ---------------------------------
+
+if [[ -z "${DOTFILES_PROFILE:-}" ]]; then
+  log "Select a profile:"
+  log "  [1] personal (default)"
+  log "  [2] work"
+  read -r -p "Profile choice [1/2]: " _choice
+  case "${_choice:-1}" in
+    2) DOTFILES_PROFILE="work" ;;
+    *) DOTFILES_PROFILE="personal" ;;
+  esac
+fi
+
+export DOTFILES_PROFILE
+log "Using profile: $DOTFILES_PROFILE"
+source "$DOTFILES_DIR/profiles/$DOTFILES_PROFILE.sh"
 
 # ---------------------------------
 # Install Homebrew if missing
 # ---------------------------------
 
 if ! command -v brew &> /dev/null; then
-  echo "Installing Homebrew..."
-
+  log "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
   eval "$(/opt/homebrew/bin/brew shellenv)"
+  ok "Homebrew installed."
+else
+  ok "Homebrew already installed."
 fi
 
 # ---------------------------------
 # Update Homebrew
 # ---------------------------------
 
-echo "Updating Homebrew..."
+log "Updating Homebrew..."
 brew update --quiet
 
 # ---------------------------------
 # Install Brewfile packages
 # ---------------------------------
 
-echo "Checking Brewfile packages..."
+log "Checking Brewfile packages..."
 
-if brew bundle check --file="$HOME/dotfiles/Brewfile"; then
-  echo "All Brewfile dependencies are satisfied."
+if brew bundle check --file="$DOTFILES_DIR/Brewfile" 2>/dev/null; then
+  ok "All Brewfile dependencies satisfied."
 else
-  echo "Installing missing Brewfile packages..."
-  brew bundle --file="$HOME/dotfiles/Brewfile"
+  log "Installing missing Brewfile packages..."
+  brew bundle --file="$DOTFILES_DIR/Brewfile" --no-lock
+  ok "Brewfile packages installed."
 fi
 
 # ---------------------------------
 # Install Claude Code CLI
 # ---------------------------------
-echo "Installing Claude Code CLI..."
+
 if ! command -v claude &> /dev/null; then
+  log "Installing Claude Code CLI..."
   curl -fsSL https://claude.ai/install.sh | bash
-  echo "Claude Code CLI installed."
+  ok "Claude Code CLI installed."
 else
-  echo "Claude Code CLI already installed."
+  ok "Claude Code CLI already installed."
 fi
 
 # ---------------------------------
 # Setup GitHub SSH
 # ---------------------------------
 
-echo "Configuring GitHub SSH..."
-
-SSH_KEY="$HOME/.ssh/id_ed25519"
-
-if [ ! -f "$SSH_KEY" ]; then
-  echo "Generating SSH key..."
-  ssh-keygen -t ed25519 -C "github" -f "$SSH_KEY" -N ""
-else
-  echo "SSH key already exists."
-fi
-
-# Start ssh-agent
-eval "$(ssh-agent -s)"
-
-# Add key to agent
-ssh-add "$SSH_KEY" || true
-
-# Ensure ssh config exists
-mkdir -p ~/.ssh
-
-SSH_CONFIG="$HOME/.ssh/config"
-
-if ! grep -q "github.com" "$SSH_CONFIG" 2>/dev/null; then
-
-cat <<EOF >> "$SSH_CONFIG"
-
-Host github.com
-  HostName github.com
-  User git
-  IdentityFile ~/.ssh/id_ed25519
-  AddKeysToAgent yes
-  UseKeychain yes
-
-EOF
-
-echo "GitHub SSH config added."
-
-else
-  echo "GitHub SSH config already present."
-fi
-
-# ---------------------------------
-# Copy public key to clipboard
-# ---------------------------------
-
-if command -v pbcopy &> /dev/null; then
-  pbcopy < ~/.ssh/id_ed25519.pub
-  echo ""
-  echo "Your SSH public key has been copied to the clipboard."
-else
-  echo ""
-  echo "Clipboard utility not found. Here is your SSH key:"
-  cat ~/.ssh/id_ed25519.pub
-fi
-
-echo ""
-echo "Add the key to GitHub:"
-echo "https://github.com/settings/keys"
-echo ""
-echo "Just paste it there (Cmd + V)."
+DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
 
 # ---------------------------------
 # Verify required tools
 # ---------------------------------
 
 if ! command -v stow &> /dev/null; then
-  echo "Error: GNU Stow is required but not installed."
-  echo "Please ensure 'stow' exists in the Brewfile."
+  error "GNU Stow is required but not installed. Ensure 'stow' is in the Brewfile."
   exit 1
 fi
 
@@ -137,34 +100,35 @@ fi
 # Apply dotfiles with stow
 # ---------------------------------
 
-echo "Applying dotfiles..."
+log "Applying dotfiles..."
 
-cd "$HOME/dotfiles"
+cd "$DOTFILES_DIR"
+
+# Directories that are not stow packages
+_NO_STOW=("macos" "lib" "profiles" "docs")
 
 for pkg in */ ; do
-  pkg=${pkg%/}
+  pkg="${pkg%/}"
 
-  if [[ "$pkg" == "macos" ]]; then
-    continue
-  fi
+  skip=false
+  for s in "${_NO_STOW[@]}"; do
+    [[ "$pkg" == "$s" ]] && skip=true && break
+  done
+  $skip && continue
 
-  if [[ "$pkg" == ".git" ]]; then
-    continue
-  fi
-
-  echo "Stowing $pkg..."
+  log "Stowing $pkg..."
   stow -R --adopt "$pkg"
-
 done
+
+ok "Dotfiles applied."
 
 # ---------------------------------
 # Apply macOS configuration
 # ---------------------------------
 
-if [ -f "$HOME/dotfiles/macos/macos.sh" ]; then
-  echo "Applying macOS configuration..."
-  bash "$HOME/dotfiles/macos/macos.sh"
+if [[ -f "$DOTFILES_DIR/macos/macos.sh" ]]; then
+  log "Applying macOS configuration..."
+  DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/macos/macos.sh"
 fi
 
-echo ""
-echo "Bootstrap completed successfully!"
+ok "Bootstrap completed successfully!"

@@ -1,6 +1,5 @@
-#!/bin/bash
-
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
 echo "Starting DevOps workstation setup..."
 
@@ -10,9 +9,7 @@ echo "Starting DevOps workstation setup..."
 
 if ! command -v brew &> /dev/null; then
   echo "Installing Homebrew..."
-
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
   echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
@@ -32,10 +29,9 @@ fi
 
 if [ ! -d "$HOME/dotfiles" ]; then
   echo "Cloning dotfiles..."
-
   git clone https://github.com/carloschongdev/dotfiles.git "$HOME/dotfiles"
 else
-  echo "Dotfiles repo already exists"
+  echo "Dotfiles repo already exists."
 fi
 
 # ---------------------------------
@@ -43,8 +39,6 @@ fi
 # ---------------------------------
 
 echo "Running bootstrap..."
-
-cd "$HOME/dotfiles"
-bash bootstrap.sh
+bash "$HOME/dotfiles/bootstrap.sh"
 
 echo "DevOps workstation ready!"

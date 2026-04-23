@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-echo "Configuring Dock..."
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+source "$DOTFILES_DIR/lib/logging.sh"
 
-# Función segura
+log "Configuring Dock..."
+
+# Only add app if it's installed
 add_app() {
   if [ -d "$1" ]; then
     dockutil --add "$1" --no-restart
   else
-    echo "Skipping $1 (not installed)"
+    warn "Skipping $(basename "$1") — not installed"
   fi
 }
 
-# Limpiar Dock
+# Clear Dock
 dockutil --remove all --no-restart
 
 # ---------------------------------
@@ -71,18 +75,12 @@ add_app "/Applications/Spotify.app"
 add_app "/Applications/VLC.app"
 
 # ---------------------------------
-# Spacer
+# Spacer + Downloads folder
 # ---------------------------------
 
 dockutil --add '' --type spacer --no-restart
-
-# ---------------------------------
-# Downloads Folder
-# ---------------------------------
-
 dockutil --add ~/Downloads --view fan --display stack
 
-# Reiniciar Dock
 killall Dock
 
-echo "Dock configured!"
+ok "Dock configured."

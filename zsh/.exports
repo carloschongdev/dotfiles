@@ -1,0 +1,63 @@
+# -----------------------------------------------
+# PATH
+# -----------------------------------------------
+
+# Claude Code CLI (installed via curl install.sh)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Homebrew (Apple Silicon)
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# npm global packages
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# -----------------------------------------------
+# Editor
+# -----------------------------------------------
+
+export EDITOR="code --wait"
+export VISUAL="$EDITOR"
+
+# -----------------------------------------------
+# Language / locale
+# -----------------------------------------------
+
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+
+# -----------------------------------------------
+# History
+# -----------------------------------------------
+
+export HISTSIZE=10000
+export SAVEHIST=10000
+export HISTFILE="$HOME/.zsh_history"
+
+# -----------------------------------------------
+# Tools
+# -----------------------------------------------
+
+# bat (better cat)
+export BAT_THEME="base16"
+
+# fzf
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
+export FZF_DEFAULT_COMMAND="rg --files --hidden --glob '!.git'"
+
+# ripgrep
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
+# zoxide
+export _ZO_ECHO=1
+
+# -----------------------------------------------
+# Docker / Kubernetes
+# -----------------------------------------------
+
+export KUBECONFIG="$HOME/.kube/config"
+
+# -----------------------------------------------
+# Secrets (load from separate untracked file)
+# -----------------------------------------------
+
+[ -f "$HOME/.secrets" ] && source "$HOME/.secrets"

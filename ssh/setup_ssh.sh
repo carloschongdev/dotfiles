@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -e
+DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+source "$DOTFILES_DIR/lib/logging.sh"
 
-echo "Configuring SSH for GitHub..."
+log "Configuring SSH for GitHub..."
 
 SSH_KEY="$HOME/.ssh/id_ed25519"
 
@@ -10,37 +12,32 @@ SSH_KEY="$HOME/.ssh/id_ed25519"
 # Create SSH key if it doesn't exist
 # ---------------------------------
 
-if [ ! -f "$SSH_KEY" ]; then
-  echo "Generating SSH key..."
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
 
+if [ ! -f "$SSH_KEY" ]; then
+  log "Generating SSH key..."
   ssh-keygen -t ed25519 -C "github" -f "$SSH_KEY" -N ""
+  ok "SSH key generated."
 else
-  echo "SSH key already exists."
+  ok "SSH key already exists."
 fi
 
 # ---------------------------------
-# Start ssh-agent
+# Start ssh-agent and add key
 # ---------------------------------
 
-eval "$(ssh-agent -s)"
+eval "$(ssh-agent -s)" > /dev/null
+ssh-add "$SSH_KEY" 2>/dev/null || true
 
 # ---------------------------------
-# Add key to agent
+# Add GitHub host to ssh config
 # ---------------------------------
-
-ssh-add "$SSH_KEY" || true
-
-# ---------------------------------
-# Create ssh config if missing
-# ---------------------------------
-
-mkdir -p ~/.ssh
 
 SSH_CONFIG="$HOME/.ssh/config"
 
-if ! grep -q "github.com" "$SSH_CONFIG" 2>/dev/null; then
-
-cat <<EOF >> "$SSH_CONFIG"
+if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+  cat >> "$SSH_CONFIG" <<EOF
 
 Host github.com
   HostName github.com
@@ -48,22 +45,25 @@ Host github.com
   IdentityFile ~/.ssh/id_ed25519
   AddKeysToAgent yes
   UseKeychain yes
-
 EOF
-
-echo "SSH config for GitHub added."
-
+  ok "GitHub SSH config added."
 else
-  echo "SSH config already present."
+  ok "GitHub SSH config already present."
 fi
 
+chmod 600 "$SSH_CONFIG"
+
 # ---------------------------------
-# Print public key
+# Copy public key to clipboard
 # ---------------------------------
 
 echo ""
-echo "Add this key to GitHub:"
-echo "https://github.com/settings/keys"
-echo ""
+if command -v pbcopy &> /dev/null; then
+  pbcopy < "$SSH_KEY.pub"
+  ok "SSH public key copied to clipboard."
+else
+  warn "pbcopy not found — printing key instead:"
+  cat "$SSH_KEY.pub"
+fi
 
-cat ~/.ssh/id_ed25519.pub
+log "Add the key at: https://github.com/settings/keys"

@@ -1,6 +1,6 @@
 [user]
-  name = Carlos Chong
-  email = carlos.chong@intechideas.com
+  name  = Carlos Chong
+  email = carloschong28@hotmail.com
 
 [core]
   editor = nano
@@ -13,7 +13,13 @@
 
 [url "git@github.com:"]
   insteadOf = https://github.com/
-  
+
+[includeIf "gitdir:~/work/"]
+  path = ~/.gitconfig-work
+
+[includeIf "gitdir:~/Projects/intechideas/"]
+  path = ~/.gitconfig-work
+
 [alias]
 	ac = !git add -A && git commit
 	sync = "!f() {\nfiles=$(git diff --name-only);\nif [ -z \"$files\" ]; then\n  echo \"No changes to commit\";\n  exit 0;\nfi;\n\nmsg=\"update:\";\nfor f in $files; do\n  msg=\"$msg $f\";\ndone;\n\ngit add -A;\ngit commit -m \"$msg\";\ngit pull --rebase origin main;\ngit push origin main;\n}; f"
