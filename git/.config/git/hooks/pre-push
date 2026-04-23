@@ -20,7 +20,7 @@ if [[ "$ACTIVE_GH_USER" == "CarlosChong28" ]]; then
   echo "  WARNING: Active account is WORK (CarlosChong28)"
   echo "  Run: gh auth switch --user carloschongdev"
   echo ""
-  read -rp "Are you sure you want to continue? (y/N): " confirm
+  read -rp "Are you sure you want to continue? (y/N): " confirm < /dev/tty
   [[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
 fi
 
@@ -28,12 +28,12 @@ if echo "$REMOTE_URL" | grep -qi "CarlosChong28\|intechideas"; then
   echo ""
   echo "  WARNING: Remote looks like a WORK repository"
   echo ""
-  read -rp "Are you sure you want to push to a work repo? (y/N): " confirm
+  read -rp "Are you sure you want to push to a work repo? (y/N): " confirm < /dev/tty
   [[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
 fi
 
 echo ""
-read -rp "Proceed with push? (y/N): " confirm
+read -rp "Proceed with push? (y/N): " confirm < /dev/tty
 [[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
 
 echo ""
