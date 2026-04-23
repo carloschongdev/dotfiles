@@ -15,10 +15,7 @@
 [url "git@github.com:"]
   insteadOf = https://github.com/
 
-[includeIf "gitdir:~/work/"]
-  path = ~/.gitconfig-work
-
-[includeIf "gitdir:~/Projects/intechideas/"]
+[includeIf "gitdir:~/Projects/Intechideas-International/"]
   path = ~/.gitconfig-work
 
 [alias]
