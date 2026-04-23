@@ -4,6 +4,7 @@
 
 [core]
   editor = nano
+  hooksPath = ~/.config/git/hooks
 
 [pull]
   rebase = true

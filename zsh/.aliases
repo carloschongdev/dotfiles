@@ -71,3 +71,19 @@ alias kcx='kubectl config get-contexts'
 alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder'
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder'
 alias flushdns='sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder'
+
+# -----------------------------------------------
+# Safety & context check
+# -----------------------------------------------
+
+# Muestra repo, branch, cuenta gh activa y directorio antes de operar
+alias safe-check='echo "== Repo ==" && git remote -v && echo "\n== Branch ==" && git branch --show-current && echo "\n== gh account ==" && gh auth status 2>/dev/null | grep -E "account|Active" && echo "\n== Directory ==" && pwd'
+
+# Cambia a cuenta personal de gh
+alias ghpersonal='gh auth switch --user carloschongdev && echo "Switched to personal: carloschongdev"'
+
+# Cambia a cuenta de trabajo de gh
+alias ghwork='gh auth switch --user CarlosChong28 && echo "Switched to work: CarlosChong28"'
+
+# Muestra que cuenta de gh esta activa actualmente
+alias ghwho='gh auth status 2>/dev/null | grep -E "account|Active"'

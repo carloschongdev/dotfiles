@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ACTIVE_GH_USER=$(gh auth status 2>/dev/null | grep "Active account: true" -B1 | grep "account" | awk '{print $NF}')
+REMOTE_URL=$(git remote get-url origin)
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+echo ""
+echo "================================================"
+echo "  PRE-PUSH CHECK"
+echo "================================================"
+echo "  Repo    : $REMOTE_URL"
+echo "  Branch  : $BRANCH"
+echo "  gh user : $ACTIVE_GH_USER"
+echo "  Dir     : $(pwd)"
+echo "================================================"
+
+# Advertencia si la cuenta activa es la de trabajo
+if [[ "$ACTIVE_GH_USER" == "CarlosChong28" ]]; then
+  echo ""
+  echo "  WARNING: Active account is WORK (CarlosChong28)"
+  echo "  Run: gh auth switch --user carloschongdev"
+  echo ""
+  read -r "?Are you sure you want to continue? (y/N): " confirm
+  [[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
+fi
+
+# Advertencia si el remote es de la organizacion de trabajo
+if echo "$REMOTE_URL" | grep -qi "CarlosChong28\|intechideas"; then
+  echo ""
+  echo "  WARNING: Remote looks like a WORK repository"
+  echo ""
+  read -r "?Are you sure you want to push to a work repo? (y/N): " confirm
+  [[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
+fi
+
+echo ""
+read -r "?Proceed with push? (y/N): " confirm
+[[ "$confirm" == "y" || "$confirm" == "Y" ]] || exit 1
+
+echo ""
