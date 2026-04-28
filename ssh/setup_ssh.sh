@@ -4,66 +4,99 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 source "$DOTFILES_DIR/lib/logging.sh"
 
-log "Configuring SSH for GitHub..."
+log "Configuring SSH for GitHub (personal + work)..."
 
-SSH_KEY="$HOME/.ssh/id_ed25519"
+PERSONAL_KEY="$HOME/.ssh/id_carloschongdev_personal"
+WORK_KEY="$HOME/.ssh/id_CarlosChong28_work"
 
 # ---------------------------------
-# Create SSH key if it doesn't exist
+# Create ~/.ssh dir
 # ---------------------------------
 
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
 
-if [ ! -f "$SSH_KEY" ]; then
-  log "Generating SSH key..."
-  ssh-keygen -t ed25519 -C "github" -f "$SSH_KEY" -N ""
-  ok "SSH key generated."
+# ---------------------------------
+# Generate keys if they don't exist
+# ---------------------------------
+
+if [ ! -f "$PERSONAL_KEY" ]; then
+  log "Generating personal SSH key..."
+  ssh-keygen -t ed25519 -C "carloschongdev-personal" -f "$PERSONAL_KEY" -N ""
+  ok "Personal SSH key generated."
 else
-  ok "SSH key already exists."
+  ok "Personal SSH key already exists."
+fi
+
+if [ ! -f "$WORK_KEY" ]; then
+  log "Generating work SSH key..."
+  ssh-keygen -t ed25519 -C "CarlosChong28-work" -f "$WORK_KEY" -N ""
+  ok "Work SSH key generated."
+else
+  ok "Work SSH key already exists."
 fi
 
 # ---------------------------------
-# Start ssh-agent and add key
+# Add keys to ssh-agent
 # ---------------------------------
 
 eval "$(ssh-agent -s)" > /dev/null
-ssh-add "$SSH_KEY" 2>/dev/null || true
+ssh-add "$PERSONAL_KEY" 2>/dev/null || true
+ssh-add "$WORK_KEY" 2>/dev/null || true
 
 # ---------------------------------
-# Add GitHub host to ssh config
+# Configure ~/.ssh/config
 # ---------------------------------
 
 SSH_CONFIG="$HOME/.ssh/config"
 
-if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+if ! grep -q "Host github-work" "$SSH_CONFIG" 2>/dev/null; then
   cat >> "$SSH_CONFIG" <<EOF
 
-Host github.com
+# =========================
+# WORK (InTech)
+# =========================
+Host github-work
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519
+  IdentityFile $HOME/.ssh/id_CarlosChong28_work
   AddKeysToAgent yes
   UseKeychain yes
 EOF
-  ok "GitHub SSH config added."
+  ok "Work SSH config added."
 else
-  ok "GitHub SSH config already present."
+  ok "Work SSH config already present."
+fi
+
+if ! grep -q "Host github-personal" "$SSH_CONFIG" 2>/dev/null; then
+  cat >> "$SSH_CONFIG" <<EOF
+
+# =========================
+# PERSONAL
+# =========================
+Host github-personal
+  HostName github.com
+  User git
+  IdentityFile $HOME/.ssh/id_carloschongdev_personal
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+  ok "Personal SSH config added."
+else
+  ok "Personal SSH config already present."
 fi
 
 chmod 600 "$SSH_CONFIG"
 
 # ---------------------------------
-# Copy public key to clipboard
+# Show public keys for GitHub
 # ---------------------------------
 
 echo ""
-if command -v pbcopy &> /dev/null; then
-  pbcopy < "$SSH_KEY.pub"
-  ok "SSH public key copied to clipboard."
-else
-  warn "pbcopy not found — printing key instead:"
-  cat "$SSH_KEY.pub"
-fi
-
-log "Add the key at: https://github.com/settings/keys"
+log "Add the following public keys to GitHub (https://github.com/settings/keys):"
+echo ""
+warn "── PERSONAL (carloschongdev) ──"
+cat "$PERSONAL_KEY.pub"
+echo ""
+warn "── WORK (CarlosChong28) ──"
+cat "$WORK_KEY.pub"

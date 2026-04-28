@@ -58,6 +58,34 @@ Git automatically uses the correct identity based on the directory:
 
 No manual switching needed — `git/.gitconfig` uses `includeIf` blocks.
 
+## SSH Keys
+
+Two separate SSH keys are configured, one per GitHub account:
+
+| Key file | Account | SSH host alias |
+|----------|---------|----------------|
+| `~/.ssh/id_carloschongdev_personal` | carloschongdev (personal) | `github-personal` |
+| `~/.ssh/id_CarlosChong28_work` | CarlosChong28 (work) | `github-work` |
+
+The `ssh/setup_ssh.sh` script generates the keys (if missing) and writes the two host blocks to `~/.ssh/config`.
+
+### Setting the remote for an existing repo
+
+```bash
+# Personal repo
+git remote set-url origin git@github-personal:carloschongdev/REPO.git
+
+# Work repo
+git remote set-url origin git@github-work:CarlosChong28/REPO.git
+```
+
+### Testing the connection
+
+```bash
+ssh -T git@github-personal   # Hi carloschongdev!
+ssh -T git@github-work        # Hi CarlosChong28!
+```
+
 ## How to Update Dotfiles
 
 After editing any config file in the repo:
