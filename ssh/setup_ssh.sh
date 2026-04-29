@@ -4,10 +4,13 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 source "$DOTFILES_DIR/lib/logging.sh"
 
-log "Configuring SSH for GitHub (personal + work)..."
+# PROFILE_NAME and PROFILE_SSH_KEYS must be set (sourced from profile file)
+: "${PROFILE_NAME:?PROFILE_NAME not set — source a profile before running this script}"
+: "${PROFILE_SSH_KEYS:?PROFILE_SSH_KEYS not set — source a profile before running this script}"
 
-PERSONAL_KEY="$HOME/.ssh/id_carloschongdev_personal"
-WORK_KEY="$HOME/.ssh/id_CarlosChong28_work"
+log "Configuring SSH for profile: $PROFILE_NAME..."
+
+SSH_CONFIG="$HOME/.ssh/config"
 
 # ---------------------------------
 # Create ~/.ssh dir
@@ -17,41 +20,77 @@ mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 
 # ---------------------------------
-# Generate keys if they don't exist
+# Generate keys defined in PROFILE_SSH_KEYS
 # ---------------------------------
 
-if [ ! -f "$PERSONAL_KEY" ]; then
-  log "Generating personal SSH key..."
-  ssh-keygen -t ed25519 -C "carloschongdev-personal" -f "$PERSONAL_KEY" -N ""
-  ok "Personal SSH key generated."
-else
-  ok "Personal SSH key already exists."
-fi
-
-if [ ! -f "$WORK_KEY" ]; then
-  log "Generating work SSH key..."
-  ssh-keygen -t ed25519 -C "CarlosChong28-work" -f "$WORK_KEY" -N ""
-  ok "Work SSH key generated."
-else
-  ok "Work SSH key already exists."
-fi
+for key_name in "${PROFILE_SSH_KEYS[@]}"; do
+  key_path="$HOME/.ssh/$key_name"
+  if [ ! -f "$key_path" ]; then
+    log "Generating SSH key: $key_name..."
+    ssh-keygen -t ed25519 -C "$key_name" -f "$key_path" -N ""
+    ok "SSH key generated: $key_name"
+  else
+    ok "SSH key already exists: $key_name"
+  fi
+done
 
 # ---------------------------------
 # Add keys to ssh-agent
 # ---------------------------------
 
 eval "$(ssh-agent -s)" > /dev/null
-ssh-add "$PERSONAL_KEY" 2>/dev/null || true
-ssh-add "$WORK_KEY" 2>/dev/null || true
+for key_name in "${PROFILE_SSH_KEYS[@]}"; do
+  ssh-add "$HOME/.ssh/$key_name" 2>/dev/null || true
+done
 
 # ---------------------------------
 # Configure ~/.ssh/config
 # ---------------------------------
 
-SSH_CONFIG="$HOME/.ssh/config"
+case "$PROFILE_NAME" in
+  personal)
+    if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+      cat >> "$SSH_CONFIG" <<EOF
 
-if ! grep -q "Host github-work" "$SSH_CONFIG" 2>/dev/null; then
-  cat >> "$SSH_CONFIG" <<EOF
+# =========================
+# PERSONAL
+# =========================
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile $HOME/.ssh/id_carloschongdev_personal
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+      ok "Personal SSH config added (Host github.com)."
+    else
+      ok "SSH config for github.com already present."
+    fi
+    ;;
+
+  work)
+    if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+      cat >> "$SSH_CONFIG" <<EOF
+
+# =========================
+# WORK (InTech)
+# =========================
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile $HOME/.ssh/id_CarlosChong28_work
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+      ok "Work SSH config added (Host github.com)."
+    else
+      ok "SSH config for github.com already present."
+    fi
+    ;;
+
+  both)
+    if ! grep -q "Host github-work" "$SSH_CONFIG" 2>/dev/null; then
+      cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
 # WORK (InTech)
@@ -63,13 +102,13 @@ Host github-work
   AddKeysToAgent yes
   UseKeychain yes
 EOF
-  ok "Work SSH config added."
-else
-  ok "Work SSH config already present."
-fi
+      ok "Work SSH config added (Host github-work)."
+    else
+      ok "Work SSH config already present."
+    fi
 
-if ! grep -q "Host github-personal" "$SSH_CONFIG" 2>/dev/null; then
-  cat >> "$SSH_CONFIG" <<EOF
+    if ! grep -q "Host github-personal" "$SSH_CONFIG" 2>/dev/null; then
+      cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
 # PERSONAL
@@ -81,10 +120,12 @@ Host github-personal
   AddKeysToAgent yes
   UseKeychain yes
 EOF
-  ok "Personal SSH config added."
-else
-  ok "Personal SSH config already present."
-fi
+      ok "Personal SSH config added (Host github-personal)."
+    else
+      ok "Personal SSH config already present."
+    fi
+    ;;
+esac
 
 chmod 600 "$SSH_CONFIG"
 
@@ -95,8 +136,8 @@ chmod 600 "$SSH_CONFIG"
 echo ""
 log "Add the following public keys to GitHub (https://github.com/settings/keys):"
 echo ""
-warn "── PERSONAL (carloschongdev) ──"
-cat "$PERSONAL_KEY.pub"
-echo ""
-warn "── WORK (CarlosChong28) ──"
-cat "$WORK_KEY.pub"
+for key_name in "${PROFILE_SSH_KEYS[@]}"; do
+  warn "── $key_name ──"
+  cat "$HOME/.ssh/$key_name.pub"
+  echo ""
+done

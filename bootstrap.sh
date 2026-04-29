@@ -20,19 +20,39 @@ log "Starting DevOps machine bootstrap..."
 # ---------------------------------
 
 if [[ -z "${DOTFILES_PROFILE:-}" ]]; then
-  log "Select a profile:"
-  log "  [1] personal (default)"
-  log "  [2] work"
-  read -r -p "Profile choice [1/2]: " _choice
-  case "${_choice:-1}" in
+  echo ""
+  echo "  Select a profile:"
+  echo "  [1] personal — single Mac for personal use"
+  echo "  [2] work     — single Mac for work only"
+  echo "  [3] both     — personal + work on same Mac (default)"
+  echo ""
+  read -rp "  Profile choice [1/2/3]: " _choice < /dev/tty
+  case "${_choice:-3}" in
+    1) DOTFILES_PROFILE="personal" ;;
     2) DOTFILES_PROFILE="work" ;;
-    *) DOTFILES_PROFILE="personal" ;;
+    *) DOTFILES_PROFILE="both" ;;
   esac
 fi
 
 export DOTFILES_PROFILE
 log "Using profile: $DOTFILES_PROFILE"
 source "$DOTFILES_DIR/profiles/$DOTFILES_PROFILE.sh"
+
+# ---------------------------------
+# Generate profile-specific config files
+# ---------------------------------
+
+log "Generating profile-specific config files..."
+
+cp "$DOTFILES_DIR/profiles/gitconfig-$DOTFILES_PROFILE" "$DOTFILES_DIR/git/.gitconfig"
+ok "gitconfig set for profile: $DOTFILES_PROFILE"
+
+if [[ "$DOTFILES_PROFILE" == "both" ]]; then
+  cp "$DOTFILES_DIR/zsh/.zshrc-both" "$DOTFILES_DIR/zsh/.zshrc"
+else
+  cp "$DOTFILES_DIR/zsh/.zshrc-base" "$DOTFILES_DIR/zsh/.zshrc"
+fi
+ok ".zshrc set for profile: $DOTFILES_PROFILE"
 
 # ---------------------------------
 # Install Homebrew if missing
@@ -59,14 +79,14 @@ brew update --quiet
 # Install Brewfile packages
 # ---------------------------------
 
-log "Checking Brewfile packages..."
+log "Checking Brewfile.$DOTFILES_PROFILE packages..."
 
-if brew bundle check --file="$DOTFILES_DIR/Brewfile" 2>/dev/null; then
-  ok "All Brewfile dependencies satisfied."
+if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
+  ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
 else
-  log "Installing missing Brewfile packages..."
-  brew bundle --file="$DOTFILES_DIR/Brewfile" --no-lock
-  ok "Brewfile packages installed."
+  log "Installing missing Brewfile.$DOTFILES_PROFILE packages..."
+  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" --no-lock
+  ok "Brewfile.$DOTFILES_PROFILE packages installed."
 fi
 
 # ---------------------------------

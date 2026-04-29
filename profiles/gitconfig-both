@@ -1,0 +1,24 @@
+[user]
+  name  = Carlos Chong
+  email = carloschong28@hotmail.com
+
+[core]
+  editor = nano
+  hooksPath = ~/.config/git/hooks
+
+[pull]
+  rebase = true
+
+[init]
+  defaultBranch = main
+
+[url "git@github.com:"]
+  insteadOf = https://github.com/
+
+[includeIf "gitdir:~/Projects/Intechideas-International/"]
+  path = ~/.gitconfig-work
+
+[alias]
+	ac = !git add -A && git commit
+	sync = "!f() {\nfiles=$(git diff --name-only);\nif [ -z \"$files\" ]; then\n  echo \"No changes to commit\";\n  exit 0;\nfi;\n\nmsg=\"update:\";\nfor f in $files; do\n  msg=\"$msg $f\";\ndone;\n\ngit add -A;\ngit commit -m \"$msg\";\ngit pull --rebase origin main;\ngit push origin main;\n}; f"
+	smart-sync = "!f(){ branch=$(git rev-parse --abbrev-ref HEAD); git add -A; files=$(git diff --cached --name-only | tr \"\\n\" \" \"); if [ -n \"$files\" ]; then git commit -m \"update: $files\"; fi; git pull --rebase origin $branch; git push origin $branch; }; f"
