@@ -105,7 +105,7 @@ fi
 # Setup GitHub SSH
 # ---------------------------------
 
-DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
+DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
 
 # ---------------------------------
 # Verify required tools

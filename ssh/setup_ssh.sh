@@ -4,11 +4,70 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 source "$DOTFILES_DIR/lib/logging.sh"
 
-# PROFILE_NAME and PROFILE_SSH_KEYS must be set (sourced from profile file)
-: "${PROFILE_NAME:?PROFILE_NAME not set — source a profile before running this script}"
-: "${PROFILE_SSH_KEYS:?PROFILE_SSH_KEYS not set — source a profile before running this script}"
+DRY_RUN=false
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
-log "Configuring SSH for profile: $PROFILE_NAME..."
+: "${DOTFILES_PROFILE:?DOTFILES_PROFILE not set — export DOTFILES_PROFILE before running this script}"
+
+PERSONAL_KEY="id_carloschongdev_personal"
+WORK_KEY="id_CarlosChong28_work"
+
+case "$DOTFILES_PROFILE" in
+  personal) SSH_KEYS=("$PERSONAL_KEY") ;;
+  work)     SSH_KEYS=("$WORK_KEY") ;;
+  both)     SSH_KEYS=("$PERSONAL_KEY" "$WORK_KEY") ;;
+  *) echo "Unknown profile: $DOTFILES_PROFILE"; exit 1 ;;
+esac
+
+# ---------------------------------
+# Dry-run: print plan and exit
+# ---------------------------------
+
+if $DRY_RUN; then
+  echo ""
+  echo "Profile: $DOTFILES_PROFILE"
+  echo "Keys to generate:"
+  for k in "${SSH_KEYS[@]}"; do echo "  ~/.ssh/$k"; done
+  echo ""
+  echo "~/.ssh/config Host block:"
+  echo ""
+  case "$DOTFILES_PROFILE" in
+    personal)
+      cat <<EOF
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/$PERSONAL_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+      ;;
+    work)
+      cat <<EOF
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/$WORK_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+      ;;
+    both)
+      cat <<EOF
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/$PERSONAL_KEY
+  IdentityFile ~/.ssh/$WORK_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+EOF
+      ;;
+  esac
+  exit 0
+fi
+
+log "Configuring SSH for profile: $DOTFILES_PROFILE..."
 
 SSH_CONFIG="$HOME/.ssh/config"
 
@@ -20,10 +79,10 @@ mkdir -p "$HOME/.ssh"
 chmod 700 "$HOME/.ssh"
 
 # ---------------------------------
-# Generate keys defined in PROFILE_SSH_KEYS
+# Generate keys
 # ---------------------------------
 
-for key_name in "${PROFILE_SSH_KEYS[@]}"; do
+for key_name in "${SSH_KEYS[@]}"; do
   key_path="$HOME/.ssh/$key_name"
   if [ ! -f "$key_path" ]; then
     log "Generating SSH key: $key_name..."
@@ -39,17 +98,17 @@ done
 # ---------------------------------
 
 eval "$(ssh-agent -s)" > /dev/null
-for key_name in "${PROFILE_SSH_KEYS[@]}"; do
-  ssh-add "$HOME/.ssh/$key_name" 2>/dev/null || true
+for key_name in "${SSH_KEYS[@]}"; do
+  ssh-add --apple-use-keychain "$HOME/.ssh/$key_name" 2>/dev/null || true
 done
 
 # ---------------------------------
 # Configure ~/.ssh/config
 # ---------------------------------
 
-case "$PROFILE_NAME" in
-  personal)
-    if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+  case "$DOTFILES_PROFILE" in
+    personal)
       cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
@@ -58,18 +117,13 @@ case "$PROFILE_NAME" in
 Host github.com
   HostName github.com
   User git
-  IdentityFile $HOME/.ssh/id_carloschongdev_personal
+  IdentityFile $HOME/.ssh/$PERSONAL_KEY
   AddKeysToAgent yes
   UseKeychain yes
 EOF
       ok "Personal SSH config added (Host github.com)."
-    else
-      ok "SSH config for github.com already present."
-    fi
-    ;;
-
-  work)
-    if ! grep -q "Host github.com" "$SSH_CONFIG" 2>/dev/null; then
+      ;;
+    work)
       cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
@@ -78,54 +132,32 @@ EOF
 Host github.com
   HostName github.com
   User git
-  IdentityFile $HOME/.ssh/id_CarlosChong28_work
+  IdentityFile $HOME/.ssh/$WORK_KEY
   AddKeysToAgent yes
   UseKeychain yes
 EOF
       ok "Work SSH config added (Host github.com)."
-    else
-      ok "SSH config for github.com already present."
-    fi
-    ;;
-
-  both)
-    if ! grep -q "Host github-work" "$SSH_CONFIG" 2>/dev/null; then
+      ;;
+    both)
       cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
-# WORK (InTech)
+# BOTH (personal + work)
 # =========================
-Host github-work
+Host github.com
   HostName github.com
   User git
-  IdentityFile $HOME/.ssh/id_CarlosChong28_work
+  IdentityFile $HOME/.ssh/$PERSONAL_KEY
+  IdentityFile $HOME/.ssh/$WORK_KEY
   AddKeysToAgent yes
   UseKeychain yes
 EOF
-      ok "Work SSH config added (Host github-work)."
-    else
-      ok "Work SSH config already present."
-    fi
-
-    if ! grep -q "Host github-personal" "$SSH_CONFIG" 2>/dev/null; then
-      cat >> "$SSH_CONFIG" <<EOF
-
-# =========================
-# PERSONAL
-# =========================
-Host github-personal
-  HostName github.com
-  User git
-  IdentityFile $HOME/.ssh/id_carloschongdev_personal
-  AddKeysToAgent yes
-  UseKeychain yes
-EOF
-      ok "Personal SSH config added (Host github-personal)."
-    else
-      ok "Personal SSH config already present."
-    fi
-    ;;
-esac
+      ok "Both SSH configs added (Host github.com)."
+      ;;
+  esac
+else
+  ok "SSH config for github.com already present."
+fi
 
 chmod 600 "$SSH_CONFIG"
 
@@ -136,7 +168,7 @@ chmod 600 "$SSH_CONFIG"
 echo ""
 log "Add the following public keys to GitHub (https://github.com/settings/keys):"
 echo ""
-for key_name in "${PROFILE_SSH_KEYS[@]}"; do
+for key_name in "${SSH_KEYS[@]}"; do
   warn "── $key_name ──"
   cat "$HOME/.ssh/$key_name.pub"
   echo ""

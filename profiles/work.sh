@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Installs all apps from Brewfile except CapCut
 PROFILE_NAME="work"
 PROFILE_GIT_NAME="Carlos Chong"
 PROFILE_GIT_EMAIL="carlos.chong@intechideas.com"

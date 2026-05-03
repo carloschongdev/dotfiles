@@ -75,7 +75,15 @@ cask "ghostty"
 # Utilities
 ############################################
 
+cask "appcleaner"
 cask "rectangle"
+
+############################################
+# Media
+############################################
+
+cask "spotify"
+cask "vlc"
 
 ############################################
 # VPN
@@ -88,6 +96,7 @@ cask "surfshark"
 ############################################
 
 mas "Xcode", id: 497799835
+mas "WhatsApp", id: 310633997
 mas "The Unarchiver", id: 425424353
 mas "Hidden Bar", id: 1452453066
 mas "WidgetWall", id: 1618466427

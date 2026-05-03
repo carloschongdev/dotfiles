@@ -19,6 +19,8 @@ brew "tree"
 ############################################
 
 brew "gh"              # GitHub CLI
+brew "kubernetes-cli"  # kubectl
+brew "k9s"             # Kubernetes terminal UI
 brew "jq"              # JSON processor
 brew "ripgrep"         # fast search tool (rg)
 
@@ -32,6 +34,7 @@ brew "zoxide"          # smarter cd
 brew "bat"             # better cat
 brew "eza"             # better ls
 brew "fastfetch"       # system info
+brew "mole"            # SSH tunneling helper
 brew "dockutil"        # automate macOS Dock
 
 ############################################
@@ -51,6 +54,8 @@ cask "font-jetbrains-mono-nerd-font"
 ############################################
 
 cask "visual-studio-code"
+cask "docker-desktop"
+cask "linear"
 cask "claude"
 
 ############################################
@@ -94,7 +99,6 @@ mas "Xcode", id: 497799835
 mas "WhatsApp", id: 310633997
 mas "The Unarchiver", id: 425424353
 mas "Hidden Bar", id: 1452453066
-mas "CapCut", id: 1500855883
 mas "WidgetWall", id: 1618466427
 mas "CleanMyKeyboard", id: 6468120888
 mas "Brother iPrint&Scan", id: 1193539993
