@@ -36,12 +36,13 @@ All other tools are installed automatically by the bootstrap.
 
 ## Profiles
 
-Two profiles are supported: **personal** (default) and **work**.
+Three profiles are supported: **personal**, **work**, and **both**.
 
 Set the profile before running bootstrap:
 
 ```bash
 DOTFILES_PROFILE=work bash bootstrap.sh
+DOTFILES_PROFILE=both bash bootstrap.sh
 ```
 
 Or let bootstrap prompt you interactively when no `DOTFILES_PROFILE` env var is set.
@@ -62,28 +63,52 @@ No manual switching needed — `git/.gitconfig` uses `includeIf` blocks.
 
 Two separate SSH keys are configured, one per GitHub account:
 
-| Key file | Account | SSH host alias |
-|----------|---------|----------------|
-| `~/.ssh/id_carloschongdev_personal` | carloschongdev (personal) | `github-personal` |
-| `~/.ssh/id_CarlosChong28_work` | CarlosChong28 (work) | `github-work` |
+| Key file | GitHub account |
+|----------|----------------|
+| `~/.ssh/id_carloschongdev_personal` | carloschongdev (personal) |
+| `~/.ssh/id_CarlosChong28_work` | CarlosChong28 (work) |
 
-The `ssh/setup_ssh.sh` script generates the keys (if missing) and writes the two host blocks to `~/.ssh/config`.
+The `ssh/setup_ssh.sh` script generates the keys (if missing) and writes host blocks to `~/.ssh/config` based on the active profile.
+
+### SSH config per profile
+
+| Profile | Host blocks written |
+|---------|---------------------|
+| `personal` | `github.com` → personal key only |
+| `work` | `github.com` → work key only |
+| `both` | `github.com` (work, default) + `github-work` + `github-personal` |
+
+In the `both` profile, `github.com` is intentionally mapped to the **work** key because external tools (e.g. Claude Code, IDEs) connect via `git@github.com` and need a deterministic default identity.
+
+### Cloning repos
+
+```bash
+# Perfil personal o work — usar siempre:
+git clone git@github.com:usuario/REPO.git
+
+# Perfil both — repos de trabajo:
+git clone git@github-work:Intechideas-International/REPO.git
+
+# Perfil both — repos personales:
+git clone git@github-personal:carloschongdev/REPO.git
+```
 
 ### Setting the remote for an existing repo
 
 ```bash
-# Personal repo
+# Personal repo (perfil both)
 git remote set-url origin git@github-personal:carloschongdev/REPO.git
 
-# Work repo
-git remote set-url origin git@github-work:CarlosChong28/REPO.git
+# Work repo (perfil both)
+git remote set-url origin git@github-work:Intechideas-International/REPO.git
 ```
 
 ### Testing the connection
 
 ```bash
-ssh -T git@github-personal   # Hi carloschongdev!
-ssh -T git@github-work        # Hi CarlosChong28!
+ssh -T git@github.com         # Hi carloschongdev! (personal) · Hi CarlosChong28! (work/both)
+ssh -T git@github-personal    # Hi carloschongdev!   (solo perfil both)
+ssh -T git@github-work        # Hi CarlosChong28!    (solo perfil both)
 ```
 
 ## How to Update Dotfiles
