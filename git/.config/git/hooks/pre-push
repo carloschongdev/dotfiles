@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ACTIVE_GH_USER=$(gh auth status 2>/dev/null | grep "Active account: true" -B1 | grep "Logged" | awk '{print $7}')
+ACTIVE_GH_USER=$(gh auth status 2>&1 | grep "Active account: true" -B1 | grep "Logged in" | awk '{print $7}' || true)
 REMOTE_URL=$(git remote get-url origin)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
