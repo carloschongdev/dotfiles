@@ -36,6 +36,16 @@ brew "eza"             # better ls
 brew "fastfetch"       # system info
 brew "mole"            # SSH tunneling helper
 brew "dockutil"        # automate macOS Dock
+brew "git-delta"       # improved diff with syntax highlighting
+brew "tldr"            # simplified man pages
+brew "httpie"          # user-friendly HTTP client
+brew "lazygit"         # terminal git UI
+
+############################################
+# Node / JavaScript
+############################################
+
+brew "nvm"             # Node.js version manager
 
 ############################################
 # macOS App Store CLI
@@ -57,6 +67,8 @@ cask "visual-studio-code"
 cask "docker-desktop"
 cask "linear"
 cask "claude"
+cask "bruno"           # open-source REST/GraphQL client
+cask "obsidian"        # markdown note-taking
 
 ############################################
 # Browsers
@@ -77,6 +89,8 @@ cask "ghostty"
 
 cask "appcleaner"
 cask "rectangle"
+cask "raycast"         # launcher, clipboard history, snippets
+cask "imageoptim"      # image compression
 
 ############################################
 # Media

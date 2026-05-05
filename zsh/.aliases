@@ -87,3 +87,19 @@ alias ghwork='gh auth switch --user CarlosChong28 && echo "Switched to work: Car
 
 # Muestra que cuenta de gh esta activa actualmente
 alias ghwho='gh auth status 2>/dev/null | grep -E "account|Active"'
+
+# -----------------------------------------------
+# GitHub CLI shortcuts
+# -----------------------------------------------
+
+# Abrir repo actual en GitHub
+alias ghopen='gh repo view --web'
+
+# Ver PRs abiertos del repo actual
+alias ghpr='gh pr list'
+
+# Crear PR en el navegador
+alias ghprc='gh pr create --web'
+
+# Limpiar ramas ya mergeadas (excepto main/master/develop)
+alias gclean='git branch --merged | grep -v "main\|master\|develop" | xargs git branch -d'

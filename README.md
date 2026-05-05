@@ -47,6 +47,17 @@ DOTFILES_PROFILE=both bash bootstrap.sh
 
 Or let bootstrap prompt you interactively when no `DOTFILES_PROFILE` env var is set.
 
+### Profile differences
+
+| Feature | `personal` | `work` | `both` |
+|---------|-----------|--------|--------|
+| Brewfile | `Brewfile.personal` | `Brewfile.work` | `Brewfile.both` |
+| Dock script | `dock-personal.sh` | `dock-work.sh` | `dock-both.sh` |
+| Photos.app in Dock | ✓ | — | ✓ |
+| Microsoft Outlook/Teams | — | ✓ | ✓ |
+| Linear in Dock | — | ✓ | ✓ |
+| Spotify/VLC in Dock | ✓ | — | ✓ |
+
 ### Git identity switching
 
 Git automatically uses the correct identity based on the directory:
@@ -110,6 +121,43 @@ ssh -T git@github.com         # Hi carloschongdev! (personal) · Hi CarlosChong2
 ssh -T git@github-personal    # Hi carloschongdev!   (solo perfil both)
 ssh -T git@github-work        # Hi CarlosChong28!    (solo perfil both)
 ```
+
+## New Tools
+
+| Tool | Type | Description |
+|------|------|-------------|
+| `raycast` | cask | Launcher, clipboard history, snippets — replaces Spotlight |
+| `obsidian` | cask | Markdown note-taking with local-first storage |
+| `imageoptim` | cask | Lossless image compression |
+| `bruno` | cask | Open-source REST/GraphQL client |
+| `git-delta` | brew | Improved `git diff` with syntax highlighting |
+| `tldr` | brew | Simplified man pages with practical examples |
+| `httpie` | brew | User-friendly HTTP client for APIs |
+| `lazygit` | brew | Terminal UI for git |
+| `nvm` | brew | Node.js version manager |
+
+## Aliases
+
+### GitHub CLI shortcuts
+
+| Alias | Command | Description |
+|-------|---------|-------------|
+| `ghopen` | `gh repo view --web` | Open current repo in GitHub |
+| `ghpr` | `gh pr list` | List open PRs for current repo |
+| `ghprc` | `gh pr create --web` | Create a PR in the browser |
+| `gclean` | `git branch --merged \| ...` | Delete local branches already merged (excludes main/master/develop) |
+
+## macOS Defaults
+
+The following defaults are applied automatically by `macos/macos.sh`:
+
+| Setting | Value | Key |
+|---------|-------|-----|
+| Screenshots folder | `~/Desktop/Screenshots` | `com.apple.screencapture location` |
+| Screenshot shadow | Disabled | `com.apple.screencapture disable-shadow` |
+| Mission Control animation | 0.1s | `com.apple.dock expose-animation-duration` |
+| Battery percentage | Shown | `com.apple.menuextra.battery ShowPercent` |
+| Auto-correction | Disabled | `NSAutomaticSpellingCorrectionEnabled` |
 
 ## How to Update Dotfiles
 

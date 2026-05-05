@@ -37,6 +37,40 @@ defaults write com.apple.dock show-recents        -bool false
 
 ok "Dock settings applied."
 
+# ---------------------------------
+# Screenshots
+# ---------------------------------
+
+log "Configuring screenshots..."
+mkdir -p "$HOME/Desktop/Screenshots"
+defaults write com.apple.screencapture location "$HOME/Desktop/Screenshots"
+defaults write com.apple.screencapture disable-shadow -bool true
+ok "Screenshots configured."
+
+# ---------------------------------
+# Mission Control
+# ---------------------------------
+
+log "Configuring Mission Control..."
+defaults write com.apple.dock expose-animation-duration -float 0.1
+ok "Mission Control animation speed set."
+
+# ---------------------------------
+# Menu Bar
+# ---------------------------------
+
+log "Configuring Menu Bar..."
+defaults write com.apple.menuextra.battery ShowPercent YES
+ok "Battery percentage enabled."
+
+# ---------------------------------
+# Input
+# ---------------------------------
+
+log "Configuring input settings..."
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+ok "Auto-correction disabled."
+
 # Restart Finder & Dock to apply settings
 killall Finder
 killall Dock
@@ -46,7 +80,11 @@ killall Dock
 # ---------------------------------
 
 if command -v dockutil &> /dev/null; then
-  bash "$DOTFILES_DIR/macos/dock.sh"
+  case "${DOTFILES_PROFILE:-both}" in
+    personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
+    work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
+    *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
+  esac
 else
   warn "dockutil not found — skipping Dock app layout."
 fi
