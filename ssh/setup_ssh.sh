@@ -57,8 +57,21 @@ EOF
 Host github.com
   HostName github.com
   User git
-  IdentityFile ~/.ssh/$PERSONAL_KEY
   IdentityFile ~/.ssh/$WORK_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/$WORK_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+
+Host github-personal
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/$PERSONAL_KEY
   AddKeysToAgent yes
   UseKeychain yes
 EOF
@@ -142,17 +155,33 @@ EOF
       cat >> "$SSH_CONFIG" <<EOF
 
 # =========================
-# BOTH (personal + work)
+# WORK (InTech) — default for github.com
 # =========================
 Host github.com
   HostName github.com
   User git
-  IdentityFile $HOME/.ssh/$PERSONAL_KEY
   IdentityFile $HOME/.ssh/$WORK_KEY
   AddKeysToAgent yes
   UseKeychain yes
+
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile $HOME/.ssh/$WORK_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
+
+# =========================
+# PERSONAL
+# =========================
+Host github-personal
+  HostName github.com
+  User git
+  IdentityFile $HOME/.ssh/$PERSONAL_KEY
+  AddKeysToAgent yes
+  UseKeychain yes
 EOF
-      ok "Both SSH configs added (Host github.com)."
+      ok "Both SSH configs added (github.com default=work, github-work, github-personal)."
       ;;
   esac
 else
