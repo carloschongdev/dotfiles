@@ -60,6 +60,7 @@ cask "visual-studio-code"
 cask "docker-desktop"
 cask "linear"
 cask "claude"
+cask "chatgpt"         # AI assistant client
 cask "bruno"           # open-source REST/GraphQL client
 cask "obsidian"        # markdown note-taking
 
@@ -84,6 +85,9 @@ cask "appcleaner"
 cask "rectangle"
 cask "raycast"         # launcher, clipboard history, snippets
 cask "imageoptim"      # image compression
+cask "maccy"           # clipboard manager
+cask "cheatsheet"      # shows app shortcuts on ⌘ hold
+cask "inkscape"        # vector graphics editor
 cask "whatsapp"
 cask "the-unarchiver"
 
@@ -93,12 +97,19 @@ cask "the-unarchiver"
 
 cask "spotify"
 cask "vlc"
+cask "capcut"          # video editor
 
 ############################################
 # VPN
 ############################################
 
 cask "surfshark"
+
+############################################
+# Cloud Storage
+############################################
+
+cask "megasync"        # MEGA cloud storage client
 
 ############################################
 # Mac App Store Applications
@@ -110,3 +121,4 @@ mas "Hidden Bar", id: 1452453066
 mas "WidgetWall", id: 1618466427
 mas "CleanMyKeyboard", id: 6468120888
 mas "Brother iPrint&Scan", id: 1193539993
+mas "MyWallpaper", id: 1552826194

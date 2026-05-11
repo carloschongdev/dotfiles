@@ -12,6 +12,7 @@ brew "tree"
 ############################################
 
 brew "gh"              # GitHub CLI
+brew "ghorg"           # clone all repos in a GitHub org
 brew "kubernetes-cli"  # kubectl
 brew "k9s"             # Kubernetes terminal UI
 brew "jq"              # JSON processor
@@ -60,6 +61,7 @@ cask "visual-studio-code"
 cask "docker-desktop"
 cask "linear"
 cask "claude"
+cask "chatgpt"         # AI assistant client
 cask "bruno"           # open-source REST/GraphQL client
 cask "obsidian"        # markdown note-taking
 
@@ -84,6 +86,9 @@ cask "appcleaner"
 cask "rectangle"
 cask "raycast"         # launcher, clipboard history, snippets
 cask "imageoptim"      # image compression
+cask "maccy"           # clipboard manager
+cask "cheatsheet"      # shows app shortcuts on ⌘ hold
+cask "inkscape"        # vector graphics editor
 cask "whatsapp"
 cask "the-unarchiver"
 
@@ -99,6 +104,19 @@ cask "vlc"
 ############################################
 
 cask "surfshark"
+
+############################################
+# Cloud Storage
+############################################
+
+cask "megasync"        # MEGA cloud storage client
+cask "onedrive"        # Microsoft cloud storage
+
+############################################
+# Communication
+############################################
+
+cask "microsoft-teams" # work communication
 
 ############################################
 # Mac App Store Applications
