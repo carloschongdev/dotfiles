@@ -4,6 +4,7 @@
 
 # Brewfile lock — not committed; generated during brew bundle install
 Brewfile.lock.json
+Brewfile.*.lock.json
 
 # Machine-generated Dock state snapshot — reference only, not portable
 docs/dock-current.txt

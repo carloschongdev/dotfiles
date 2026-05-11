@@ -85,7 +85,7 @@ if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/nu
   ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
 else
   log "Installing missing Brewfile.$DOTFILES_PROFILE packages..."
-  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" --no-lock
+  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
   ok "Brewfile.$DOTFILES_PROFILE packages installed."
 fi
 
