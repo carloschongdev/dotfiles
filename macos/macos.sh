@@ -60,7 +60,7 @@ ok "Mission Control animation speed set."
 # ---------------------------------
 
 log "Configuring Menu Bar..."
-defaults write com.apple.menuextra.battery ShowPercent YES
+defaults -currentHost write com.apple.controlcenter BatteryShowPercentage -bool true
 ok "Battery percentage enabled."
 
 # ---------------------------------
