@@ -109,7 +109,6 @@ cask "surfshark"
 ############################################
 
 cask "megasync"        # MEGA cloud storage client
-cask "microsoft-onedrive"        # Microsoft cloud storage
 
 ############################################
 # Communication
