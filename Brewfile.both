@@ -87,7 +87,6 @@ cask "rectangle"
 cask "raycast"         # launcher, clipboard history, snippets
 cask "imageoptim"      # image compression
 cask "maccy"           # clipboard manager
-cask "cheatsheet"      # shows app shortcuts on ⌘ hold
 cask "inkscape"        # vector graphics editor
 cask "whatsapp"
 cask "the-unarchiver"
@@ -110,7 +109,7 @@ cask "surfshark"
 ############################################
 
 cask "megasync"        # MEGA cloud storage client
-cask "onedrive"        # Microsoft cloud storage
+cask "microsoft-onedrive"        # Microsoft cloud storage
 
 ############################################
 # Communication
