@@ -113,18 +113,4 @@ ok "Auto-correction disabled."
 killall Finder
 killall Dock
 
-# ---------------------------------
-# Dock apps (dockutil)
-# ---------------------------------
-
-if command -v dockutil &> /dev/null; then
-  case "${DOTFILES_PROFILE:-both}" in
-    personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
-    work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
-    *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
-  esac
-else
-  warn "dockutil not found — skipping Dock app layout."
-fi
-
 ok "macOS configuration complete."

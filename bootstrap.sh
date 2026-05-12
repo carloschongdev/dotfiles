@@ -137,15 +137,18 @@ else
 fi
 
 # ---------------------------------
-# Install Claude Code CLI
+# Dock layout
 # ---------------------------------
 
-if ! command -v claude &> /dev/null; then
-  log "Installing Claude Code CLI..."
-  curl -fsSL https://claude.ai/install.sh | bash
-  ok "Claude Code CLI installed."
+if command -v dockutil &> /dev/null; then
+  log "Configuring Dock layout..."
+  case "${DOTFILES_PROFILE:-both}" in
+    personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
+    work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
+    *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
+  esac
 else
-  ok "Claude Code CLI already installed."
+  warn "dockutil not found — skipping Dock layout."
 fi
 
 # ---------------------------------
@@ -187,10 +190,22 @@ else
 fi
 
 # ---------------------------------
+# Install Claude Code CLI
+# ---------------------------------
+
+if ! command -v claude &> /dev/null; then
+  log "Installing Claude Code CLI..."
+  curl -fsSL https://claude.ai/install.sh | bash
+  ok "Claude Code CLI installed."
+else
+  ok "Claude Code CLI already installed."
+fi
+
+# ---------------------------------
 # Bootstrap summary
 # ---------------------------------
 
-ACTIVE_GH=$(gh auth status 2>/dev/null | grep "Active account: true" -B1 | grep "Logged" | awk '{print $7}')
+ACTIVE_GH=$(gh auth status 2>/dev/null | grep "Active account: true" -B1 | grep "Logged" | awk '{print $7}' || true)
 
 echo ""
 echo "================================================"
