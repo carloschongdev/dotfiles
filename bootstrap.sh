@@ -108,6 +108,18 @@ done
 ok "Dotfiles applied."
 
 # ---------------------------------
+# Install displayplacer early (needed for resolution config)
+# ---------------------------------
+
+if ! command -v displayplacer &> /dev/null; then
+  log "Installing displayplacer for display configuration..."
+  brew install displayplacer --quiet
+  ok "displayplacer installed."
+else
+  ok "displayplacer already installed."
+fi
+
+# ---------------------------------
 # Apply macOS configuration
 # ---------------------------------
 
@@ -149,44 +161,6 @@ if command -v dockutil &> /dev/null; then
   esac
 else
   warn "dockutil not found — skipping Dock layout."
-fi
-
-# ---------------------------------
-# Display resolution
-# ---------------------------------
-
-if command -v displayplacer &> /dev/null; then
-  log "Configuring display resolution..."
-  MODEL=$(system_profiler SPHardwareDataType 2>/dev/null | grep "Model Name" | awk -F: '{print $2}' | xargs)
-  SCREEN_ID=$(displayplacer list 2>/dev/null | grep "Persistent screen id" | awk '{print $4}' | head -1)
-
-  if [ -n "$SCREEN_ID" ]; then
-    case "$MODEL" in
-      *"MacBook Air"*)
-        CHIP=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
-        if echo "$CHIP" | grep -qE "M3|M4"; then
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set to 2048x1332 (Air M3/M4)." || warn "Could not set resolution."
-        else
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set to 2048x1332 (Air M1/M2)." || warn "Could not set resolution."
-        fi
-        ;;
-      *"MacBook Pro"*)
-        SCREEN_WIDTH=$(displayplacer list 2>/dev/null | grep "Resolution:" | head -1 | grep -o '[0-9]*x' | head -1 | tr -d 'x')
-        if [ "${SCREEN_WIDTH:-0}" -ge 3400 ]; then
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set (Pro 16\")." || warn "Could not set resolution."
-        else
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set (Pro 14\")." || warn "Could not set resolution."
-        fi
-        ;;
-      *)
-        warn "Unknown model '$MODEL' — skipping resolution config."
-        ;;
-    esac
-  else
-    warn "Could not detect screen ID — skipping resolution config."
-  fi
-else
-  warn "displayplacer not found — skipping resolution config."
 fi
 
 # ---------------------------------
