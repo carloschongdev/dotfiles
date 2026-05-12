@@ -76,49 +76,14 @@ log "Updating Homebrew..."
 brew update --quiet
 
 # ---------------------------------
-# Install Brewfile packages
-# ---------------------------------
-
-log "Checking Brewfile.$DOTFILES_PROFILE packages..."
-
-if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
-  ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
-else
-  log "Installing missing Brewfile.$DOTFILES_PROFILE packages..."
-  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
-  ok "Brewfile.$DOTFILES_PROFILE packages installed."
-fi
-
-# ---------------------------------
-# Install Claude Code CLI
-# ---------------------------------
-
-if ! command -v claude &> /dev/null; then
-  log "Installing Claude Code CLI..."
-  curl -fsSL https://claude.ai/install.sh | bash
-  ok "Claude Code CLI installed."
-else
-  ok "Claude Code CLI already installed."
-fi
-
-# ---------------------------------
-# Setup GitHub SSH
-# ---------------------------------
-
-DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
-
-# ---------------------------------
-# Verify required tools
+# Apply dotfiles with stow
 # ---------------------------------
 
 if ! command -v stow &> /dev/null; then
-  error "GNU Stow is required but not installed. Ensure 'stow' is in the Brewfile."
-  exit 1
+  log "Installing GNU Stow..."
+  brew install stow --quiet
+  ok "GNU Stow installed."
 fi
-
-# ---------------------------------
-# Apply dotfiles with stow
-# ---------------------------------
 
 log "Applying dotfiles..."
 
@@ -149,6 +114,38 @@ ok "Dotfiles applied."
 if [[ -f "$DOTFILES_DIR/macos/macos.sh" ]]; then
   log "Applying macOS configuration..."
   DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/macos/macos.sh"
+fi
+
+# ---------------------------------
+# Setup GitHub SSH
+# ---------------------------------
+
+DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
+
+# ---------------------------------
+# Install Brewfile packages
+# ---------------------------------
+
+log "Checking Brewfile.$DOTFILES_PROFILE packages..."
+
+if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
+  ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
+else
+  log "Installing missing Brewfile.$DOTFILES_PROFILE packages..."
+  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
+  ok "Brewfile.$DOTFILES_PROFILE packages installed."
+fi
+
+# ---------------------------------
+# Install Claude Code CLI
+# ---------------------------------
+
+if ! command -v claude &> /dev/null; then
+  log "Installing Claude Code CLI..."
+  curl -fsSL https://claude.ai/install.sh | bash
+  ok "Claude Code CLI installed."
+else
+  ok "Claude Code CLI already installed."
 fi
 
 ok "Bootstrap completed successfully!"

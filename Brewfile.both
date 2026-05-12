@@ -30,6 +30,7 @@ brew "eza"             # better ls
 brew "fastfetch"       # system info
 brew "mole"            # SSH tunneling helper
 brew "dockutil"        # automate macOS Dock
+brew "displayplacer"   # set display resolution by model
 brew "git-delta"       # improved diff with syntax highlighting
 brew "tldr"            # simplified man pages
 brew "httpie"          # user-friendly HTTP client
