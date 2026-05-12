@@ -12,8 +12,6 @@
 [init]
   defaultBranch = main
 
-[url "git@github.com:"]
-  insteadOf = https://github.com/
 
 [includeIf "gitdir:~/Projects/Intechideas-International/"]
   path = ~/.gitconfig-work
