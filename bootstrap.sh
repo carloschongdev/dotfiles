@@ -148,4 +148,21 @@ else
   ok "Claude Code CLI already installed."
 fi
 
-ok "Bootstrap completed successfully!"
+# ---------------------------------
+# Bootstrap summary
+# ---------------------------------
+
+ACTIVE_GH=$(gh auth status 2>/dev/null | grep "Active account: true" -B1 | grep "Logged" | awk '{print $7}')
+
+echo ""
+echo "================================================"
+echo "  BOOTSTRAP COMPLETE"
+echo "================================================"
+echo "  Profile  : $DOTFILES_PROFILE"
+echo "  Git email: $PROFILE_GIT_EMAIL"
+echo "  SSH keys : ${PROFILE_SSH_KEYS[*]}"
+echo "  gh user  : ${ACTIVE_GH:-not detected}"
+echo "  Hostname : $(hostname)"
+echo "  Date     : $(date '+%Y-%m-%d %H:%M:%S')"
+echo "================================================"
+echo ""

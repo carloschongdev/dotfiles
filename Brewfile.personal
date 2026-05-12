@@ -115,10 +115,9 @@ cask "megasync"        # MEGA cloud storage client
 # Mac App Store Applications
 ############################################
 
-mas "Xcode", id: 497799835
-
 mas "Hidden Bar", id: 1452453066
 mas "WidgetWall", id: 1618466427
 mas "CleanMyKeyboard", id: 6468120888
 mas "Brother iPrint&Scan", id: 1193539993
 mas "MyWallpaper", id: 1552826194
+mas "Xcode", id: 497799835
