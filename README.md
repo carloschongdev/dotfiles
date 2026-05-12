@@ -158,6 +158,9 @@ The following defaults are applied automatically by `macos/macos.sh`:
 | Mission Control animation | 0.1s | `com.apple.dock expose-animation-duration` |
 | Battery percentage | Shown | `com.apple.menuextra.battery ShowPercent` |
 | Auto-correction | Disabled | `NSAutomaticSpellingCorrectionEnabled` |
+| Wallpaper | `macos/Wallpaper.png` | osascript System Events |
+
+To change the wallpaper, replace `macos/Wallpaper.png` with a new image and commit. The new image will be applied on the next bootstrap run.
 
 ## How to Update Dotfiles
 

@@ -30,6 +30,22 @@ defaults write NSGlobalDomain AppleInterfaceStyle -string "Dark"
 ok "Dark mode enabled."
 
 # ---------------------------------
+# Wallpaper
+# ---------------------------------
+
+log "Setting wallpaper..."
+
+WALLPAPER="$DOTFILES_DIR/macos/Wallpaper.png"
+
+if [ -f "$WALLPAPER" ]; then
+  osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\""
+  ok "Wallpaper set from $WALLPAPER"
+else
+  warn "Wallpaper.png not found in macos/ — skipping."
+  warn "To set a wallpaper, add Wallpaper.png to the macos/ folder."
+fi
+
+# ---------------------------------
 # Keyboard
 # ---------------------------------
 
