@@ -115,7 +115,6 @@ cask "megasync"        # MEGA cloud storage client
 # Communication
 ############################################
 
-cask "microsoft-teams" # work communication
 
 ############################################
 # Mac App Store Applications

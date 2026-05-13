@@ -42,7 +42,6 @@ add_app "/Applications/Brave Browser.app"
 # ---------------------------------
 
 add_app "/Applications/Microsoft Outlook.app"
-add_app "/Applications/Microsoft Teams.app"
 
 # ---------------------------------
 # Communication
