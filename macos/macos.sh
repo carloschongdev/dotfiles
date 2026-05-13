@@ -148,6 +148,48 @@ else
   ok "Touch ID for sudo already configured."
 fi
 
+# ---------------------------------
+# Hot corners
+# ---------------------------------
+
+log "Configuring hot corners..."
+
+# Top-left: Quick Note (14)
+defaults write com.apple.dock wvous-tl-corner   -int 14
+defaults write com.apple.dock wvous-tl-modifier -int 0
+
+# Top-right: Mission Control (2)
+defaults write com.apple.dock wvous-tr-corner   -int 2
+defaults write com.apple.dock wvous-tr-modifier -int 0
+
+# Bottom-left: Lock Screen (13)
+defaults write com.apple.dock wvous-bl-corner   -int 13
+defaults write com.apple.dock wvous-bl-modifier -int 0
+
+# Bottom-right: Desktop (4)
+defaults write com.apple.dock wvous-br-corner   -int 4
+defaults write com.apple.dock wvous-br-modifier -int 0
+
+ok "Hot corners configured."
+
+# ---------------------------------
+# Display sleep
+# ---------------------------------
+
+log "Configuring display sleep..."
+sudo pmset -b displaysleep 5    # 5 min on battery
+sudo pmset -c displaysleep 10   # 10 min on power adapter
+ok "Display sleep configured (battery: 5min, adapter: 10min)."
+
+# ---------------------------------
+# Terminal.app defaults
+# ---------------------------------
+
+log "Configuring Terminal.app..."
+defaults write com.apple.Terminal "Default Window Settings" -string "Pro"
+defaults write com.apple.Terminal "Startup Window Settings" -string "Pro"
+ok "Terminal.app set to Pro profile."
+
 # Restart Finder & Dock to apply settings
 killall Finder
 killall Dock

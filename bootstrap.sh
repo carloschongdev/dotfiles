@@ -105,6 +105,13 @@ step "Applying dotfiles"
 
 log "Applying dotfiles..."
 
+# Create .config subdirectories before stow to ensure symlinks are created correctly
+log "Preparing .config directories..."
+mkdir -p "$HOME/.config/ghostty"
+mkdir -p "$HOME/.config/fastfetch"
+mkdir -p "$HOME/.config/starship"
+ok ".config directories ready."
+
 cd "$DOTFILES_DIR"
 
 # Directories that are not stow packages

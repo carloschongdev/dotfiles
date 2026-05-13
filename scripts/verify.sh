@@ -21,9 +21,19 @@ log "Checking symlinks..."
 check_symlink() {
   local link="$1"
   if [ -L "$link" ]; then
-    ok "  $link → $(readlink "$link")"
+    local target
+    target=$(readlink "$link")
+    if echo "$target" | grep -q "dotfiles"; then
+      ok "  $link → $target"
+    else
+      warn "  WRONG TARGET: $link → $target (expected dotfiles path)"
+      ERRORS=$((ERRORS + 1))
+    fi
+  elif [ -f "$link" ] || [ -d "$link" ]; then
+    warn "  NOT A SYMLINK: $link (file exists but is not managed by stow)"
+    ERRORS=$((ERRORS + 1))
   else
-    warn "  MISSING symlink: $link"
+    warn "  MISSING: $link"
     ERRORS=$((ERRORS + 1))
   fi
 }
