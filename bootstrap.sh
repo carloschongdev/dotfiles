@@ -159,20 +159,40 @@ step "Configuring SSH"
 DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
 
 # ---------------------------------
-# Install Brewfile packages
+# Install Brewfile packages (with retry)
 # ---------------------------------
 
 step "Installing packages"
 
 log "Checking Brewfile.$DOTFILES_PROFILE packages..."
 
-if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
-  ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
-else
-  log "Installing missing Brewfile.$DOTFILES_PROFILE packages..."
-  brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
-  ok "Brewfile.$DOTFILES_PROFILE packages installed."
-fi
+MAX_ATTEMPTS=3
+ATTEMPT=1
+BREW_SUCCESS=false
+
+while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+  if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
+    ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
+    BREW_SUCCESS=true
+    break
+  else
+    log "Installing missing Brewfile.$DOTFILES_PROFILE packages (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
+    if brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"; then
+      ok "Brewfile.$DOTFILES_PROFILE packages installed."
+      BREW_SUCCESS=true
+      break
+    else
+      if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+        warn "Some packages failed — retrying in 5 seconds... ($ATTEMPT/$MAX_ATTEMPTS)"
+        sleep 5
+      else
+        warn "Some packages failed after $MAX_ATTEMPTS attempts."
+        warn "To retry manually: brew bundle --file=$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
+      fi
+    fi
+  fi
+  ATTEMPT=$((ATTEMPT + 1))
+done
 
 # ---------------------------------
 # Dock layout
