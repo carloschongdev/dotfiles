@@ -1,0 +1,65 @@
+# Starship prompt configuration
+# https://starship.rs/config/
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$cmd_duration\
+$line_break\
+$character"""
+
+# Directory
+[directory]
+style = "bold blue"
+truncation_length = 3
+truncate_to_repo = true
+
+# Git branch
+[git_branch]
+symbol = " "
+style = "bold purple"
+
+# Git status
+[git_status]
+conflicted = "⚠️ "
+ahead = "⬆️ ${count} "
+behind = "⬇️ ${count} "
+diverged = "↕️ "
+untracked = "? "
+stashed = "📦 "
+modified = "! "
+staged = "✚ "
+renamed = "» "
+deleted = "✖ "
+style = "bold red"
+
+# Command duration — show if command takes more than 2 seconds
+[cmd_duration]
+min_time = 2_000
+format = "took [$duration](bold yellow) "
+
+# Character — show different symbol based on last command success
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+# Disable modules not needed
+[package]
+disabled = true
+
+[nodejs]
+disabled = false
+symbol = " "
+
+[python]
+disabled = false
+symbol = " "
+
+[docker_context]
+disabled = false
+symbol = " "
+
+[kubernetes]
+disabled = false
+symbol = "☸ "

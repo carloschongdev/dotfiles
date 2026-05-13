@@ -5,6 +5,18 @@ DOTFILES_DIR="$HOME/dotfiles"
 
 source "$DOTFILES_DIR/lib/logging.sh"
 
+# Progress tracking
+TOTAL_STEPS=10
+CURRENT_STEP=0
+
+step() {
+  CURRENT_STEP=$((CURRENT_STEP + 1))
+  echo ""
+  echo "────────────────────────────────────────"
+  echo "  Step $CURRENT_STEP/$TOTAL_STEPS — $1"
+  echo "────────────────────────────────────────"
+}
+
 # Ask for the administrator password upfront and keep it alive
 sudo -v
 while true; do
@@ -18,6 +30,8 @@ log "Starting DevOps machine bootstrap..."
 # ---------------------------------
 # Profile detection
 # ---------------------------------
+
+step "Detecting profile"
 
 if [[ -z "${DOTFILES_PROFILE:-}" ]]; then
   echo ""
@@ -58,6 +72,8 @@ ok ".zshrc set for profile: $DOTFILES_PROFILE"
 # Install Homebrew if missing
 # ---------------------------------
 
+step "Installing Homebrew"
+
 if ! command -v brew &> /dev/null; then
   log "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -68,10 +84,6 @@ else
   ok "Homebrew already installed."
 fi
 
-# ---------------------------------
-# Update Homebrew
-# ---------------------------------
-
 log "Updating Homebrew..."
 brew update --quiet
 
@@ -79,18 +91,24 @@ brew update --quiet
 # Apply dotfiles with stow
 # ---------------------------------
 
+step "Installing GNU Stow"
+
 if ! command -v stow &> /dev/null; then
   log "Installing GNU Stow..."
   brew install stow --quiet
   ok "GNU Stow installed."
+else
+  ok "GNU Stow already installed."
 fi
+
+step "Applying dotfiles"
 
 log "Applying dotfiles..."
 
 cd "$DOTFILES_DIR"
 
 # Directories that are not stow packages
-_NO_STOW=("macos" "lib" "profiles" "docs")
+_NO_STOW=("macos" "lib" "profiles" "docs" "scripts")
 
 for pkg in */ ; do
   pkg="${pkg%/}"
@@ -111,6 +129,8 @@ ok "Dotfiles applied."
 # Install displayplacer early (needed for resolution config)
 # ---------------------------------
 
+step "Configuring display resolution"
+
 if ! command -v displayplacer &> /dev/null; then
   log "Installing displayplacer for display configuration..."
   brew install displayplacer --quiet
@@ -123,6 +143,8 @@ fi
 # Apply macOS configuration
 # ---------------------------------
 
+step "Configuring macOS"
+
 if [[ -f "$DOTFILES_DIR/macos/macos.sh" ]]; then
   log "Applying macOS configuration..."
   DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/macos/macos.sh"
@@ -132,11 +154,15 @@ fi
 # Setup GitHub SSH
 # ---------------------------------
 
+step "Configuring SSH"
+
 DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
 
 # ---------------------------------
 # Install Brewfile packages
 # ---------------------------------
+
+step "Installing packages"
 
 log "Checking Brewfile.$DOTFILES_PROFILE packages..."
 
@@ -152,6 +178,8 @@ fi
 # Dock layout
 # ---------------------------------
 
+step "Configuring Dock"
+
 if command -v dockutil &> /dev/null; then
   log "Configuring Dock layout..."
   case "${DOTFILES_PROFILE:-both}" in
@@ -166,6 +194,8 @@ fi
 # ---------------------------------
 # Install Claude Code CLI
 # ---------------------------------
+
+step "Installing Claude Code CLI"
 
 if ! command -v claude &> /dev/null; then
   log "Installing Claude Code CLI..."

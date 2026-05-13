@@ -103,3 +103,10 @@ alias ghprc='gh pr create --web'
 
 # Limpiar ramas ya mergeadas (excepto main/master/develop)
 alias gclean='git branch --merged | grep -v "main\|master\|develop" | xargs git branch -d'
+
+# -----------------------------------------------
+# Dotfiles maintenance
+# -----------------------------------------------
+
+alias dotcheck='bash ~/dotfiles/scripts/verify.sh'
+alias dotupdate='bash ~/dotfiles/scripts/update.sh'
