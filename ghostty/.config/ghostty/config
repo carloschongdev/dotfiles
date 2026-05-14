@@ -23,6 +23,6 @@ selection-foreground = #ffffff
 
 cursor-style = block
 
-initial-window-width = 120
-initial-window-height = 40
+window-width = 120
+window-height = 40
 
