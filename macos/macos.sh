@@ -30,37 +30,68 @@ else
 fi
 
 # ---------------------------------
-# Display resolution (maximum for this model)
+# Display resolution
 # ---------------------------------
 
 log "Configuring display resolution..."
 
 if command -v displayplacer &> /dev/null; then
-  MODEL=$(system_profiler SPHardwareDataType 2>/dev/null | grep "Model Name" | awk -F: '{print $2}' | xargs)
   SCREEN_ID=$(displayplacer list 2>/dev/null | grep "Persistent screen id" | awk '{print $4}' | head -1)
 
   if [ -n "$SCREEN_ID" ]; then
+    MODEL=$(system_profiler SPHardwareDataType 2>/dev/null | grep "Model Name" | awk -F: '{print $2}' | xargs)
+    CHIP=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
+
+    # Detect recommended mode based on model
     case "$MODEL" in
       *"MacBook Air"*)
-        CHIP=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
         if echo "$CHIP" | grep -qE "M3|M4"; then
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set to 2048x1332 (Air M3/M4)." || warn "Could not set resolution."
+          RECOMMENDED_MODE=11
+          RECOMMENDED_RES="2048x1332"
         else
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set to 2048x1332 (Air M1/M2)." || warn "Could not set resolution."
+          RECOMMENDED_MODE=11
+          RECOMMENDED_RES="2048x1332"
         fi
         ;;
       *"MacBook Pro"*)
-        SCREEN_WIDTH=$(displayplacer list 2>/dev/null | grep "Resolution:" | head -1 | grep -o '[0-9]*x' | head -1 | tr -d 'x')
-        if [ "${SCREEN_WIDTH:-0}" -ge 3400 ]; then
-          displayplacer "id:$SCREEN_ID mode:6" 2>/dev/null && ok "Resolution set (Pro 16\")." || warn "Could not set resolution."
-        else
-          displayplacer "id:$SCREEN_ID mode:6" 2>/dev/null && ok "Resolution set (Pro 14\")." || warn "Could not set resolution."
-        fi
+        RECOMMENDED_MODE=6
+        RECOMMENDED_RES="2048x1280"
         ;;
       *)
-        warn "Unknown model '$MODEL' — skipping resolution config."
+        RECOMMENDED_MODE=6
+        RECOMMENDED_RES="best available"
         ;;
     esac
+
+    echo ""
+    echo "  Model: $MODEL ($CHIP)"
+    echo "  Available resolutions:"
+    echo ""
+    displayplacer list 2>/dev/null | grep "mode [0-9]" | while read -r line; do
+      echo "    $line"
+    done
+    echo ""
+    echo "  Recommended mode: $RECOMMENDED_MODE ($RECOMMENDED_RES)"
+    echo ""
+    echo "  Enter mode number to apply, 's' to skip, or press Enter for recommended."
+    echo "  (Auto-applying recommended in 10 seconds...)"
+    echo ""
+
+    if read -rt 10 -p "  Mode [Enter=$RECOMMENDED_MODE]: " CHOSEN_MODE < /dev/tty; then
+      if [[ "$CHOSEN_MODE" == "s" || "$CHOSEN_MODE" == "S" ]]; then
+        warn "Skipping resolution configuration."
+      elif [[ -z "$CHOSEN_MODE" ]]; then
+        displayplacer "id:$SCREEN_ID mode:$RECOMMENDED_MODE" 2>/dev/null && ok "Resolution set to mode $RECOMMENDED_MODE ($RECOMMENDED_RES)." || warn "Could not set resolution."
+      elif [[ "$CHOSEN_MODE" =~ ^[0-9]+$ ]]; then
+        displayplacer "id:$SCREEN_ID mode:$CHOSEN_MODE" 2>/dev/null && ok "Resolution set to mode $CHOSEN_MODE." || warn "Could not set resolution — invalid mode?"
+      else
+        warn "Invalid input — skipping resolution configuration."
+      fi
+    else
+      # Timeout — apply recommended
+      echo ""
+      displayplacer "id:$SCREEN_ID mode:$RECOMMENDED_MODE" 2>/dev/null && ok "Resolution set to mode $RECOMMENDED_MODE ($RECOMMENDED_RES) — auto-applied." || warn "Could not set resolution."
+    fi
   else
     warn "Could not detect screen ID — skipping resolution config."
   fi

@@ -166,26 +166,30 @@ step "Configuring SSH"
 DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
 
 # ---------------------------------
-# Install Brewfile packages (with retry)
+# Install Brewfile packages (with retry, excluding mas)
 # ---------------------------------
 
 step "Installing packages"
 
 log "Checking Brewfile.$DOTFILES_PROFILE packages..."
 
+# Create a temp Brewfile without mas lines for the retry loop
+BREWFILE_NO_MAS="/tmp/Brewfile.no-mas.tmp"
+grep -v "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > "$BREWFILE_NO_MAS"
+
 MAX_ATTEMPTS=3
 ATTEMPT=1
 BREW_SUCCESS=false
 
 while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-  if brew bundle check --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" 2>/dev/null; then
-    ok "All Brewfile.$DOTFILES_PROFILE dependencies satisfied."
+  if brew bundle check --file="$BREWFILE_NO_MAS" 2>/dev/null; then
+    ok "All brew/cask packages satisfied."
     BREW_SUCCESS=true
     break
   else
-    log "Installing missing Brewfile.$DOTFILES_PROFILE packages (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
-    if brew bundle --file="$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"; then
-      ok "Brewfile.$DOTFILES_PROFILE packages installed."
+    log "Installing brew/cask packages (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
+    if brew bundle --file="$BREWFILE_NO_MAS"; then
+      ok "brew/cask packages installed."
       BREW_SUCCESS=true
       break
     else
@@ -200,6 +204,42 @@ while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
   fi
   ATTEMPT=$((ATTEMPT + 1))
 done
+
+rm -f "$BREWFILE_NO_MAS"
+
+# ---------------------------------
+# Install mas apps (App Store) with confirmation
+# ---------------------------------
+
+log "Checking App Store apps..."
+
+MAS_APPS=$(grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" | sed 's/mas "\(.*\)", id:.*/\1/')
+
+if [ -n "$MAS_APPS" ]; then
+  echo ""
+  echo "  The following App Store apps will be installed:"
+  echo ""
+  echo "$MAS_APPS" | while read -r app; do
+    echo "    - $app"
+  done
+  echo ""
+  read -rp "  Install App Store apps? (Y/n): " mas_confirm < /dev/tty
+
+  if [[ "$mas_confirm" != "n" && "$mas_confirm" != "N" ]]; then
+    log "Installing App Store apps..."
+    grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > /tmp/Brewfile.mas.tmp
+    if brew bundle --file=/tmp/Brewfile.mas.tmp; then
+      ok "App Store apps installed."
+    else
+      warn "Some App Store apps failed — install manually from the App Store."
+    fi
+    rm -f /tmp/Brewfile.mas.tmp
+  else
+    warn "Skipping App Store apps — install manually from the App Store when ready."
+  fi
+else
+  ok "No App Store apps in this profile."
+fi
 
 # ---------------------------------
 # Dock layout
