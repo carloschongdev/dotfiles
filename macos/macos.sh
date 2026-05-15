@@ -52,9 +52,9 @@ if command -v displayplacer &> /dev/null; then
       *"MacBook Pro"*)
         SCREEN_WIDTH=$(displayplacer list 2>/dev/null | grep "Resolution:" | head -1 | grep -o '[0-9]*x' | head -1 | tr -d 'x')
         if [ "${SCREEN_WIDTH:-0}" -ge 3400 ]; then
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set (Pro 16\")." || warn "Could not set resolution."
+          displayplacer "id:$SCREEN_ID mode:6" 2>/dev/null && ok "Resolution set (Pro 16\")." || warn "Could not set resolution."
         else
-          displayplacer "id:$SCREEN_ID mode:11" 2>/dev/null && ok "Resolution set (Pro 14\")." || warn "Could not set resolution."
+          displayplacer "id:$SCREEN_ID mode:6" 2>/dev/null && ok "Resolution set (Pro 14\")." || warn "Could not set resolution."
         fi
         ;;
       *)
