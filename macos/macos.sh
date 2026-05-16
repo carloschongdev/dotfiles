@@ -72,12 +72,11 @@ if command -v displayplacer &> /dev/null; then
     done
     echo ""
     echo "  Recommended mode: $RECOMMENDED_MODE ($RECOMMENDED_RES)"
-    echo ""
     echo "  Enter mode number to apply, 's' to skip, or press Enter for recommended."
     echo "  (Auto-applying recommended in 10 seconds...)"
     echo ""
 
-    if read -rt 10 -p "  Mode [Enter=$RECOMMENDED_MODE]: " CHOSEN_MODE < /dev/tty; then
+    if read -rt 10 -rp "  Mode [Enter=$RECOMMENDED_MODE]: " CHOSEN_MODE < /dev/tty; then
       if [[ "$CHOSEN_MODE" == "s" || "$CHOSEN_MODE" == "S" ]]; then
         warn "Skipping resolution configuration."
       elif [[ -z "$CHOSEN_MODE" ]]; then
@@ -123,7 +122,7 @@ log "Configuring Dock settings..."
 
 defaults write com.apple.dock orientation         -string "left"
 defaults write com.apple.dock tilesize            -int 48
-defaults write com.apple.dock autohide            -bool false
+defaults write com.apple.dock autohide            -bool true
 defaults write com.apple.dock autohide-time-modifier -float 0.5
 defaults write com.apple.dock autohide-delay      -float 0
 defaults write com.apple.dock show-recents        -bool false

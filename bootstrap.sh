@@ -69,6 +69,37 @@ fi
 ok ".zshrc set for profile: $DOTFILES_PROFILE"
 
 # ---------------------------------
+# Step selector — choose steps to skip
+# ---------------------------------
+
+echo ""
+echo "  Skip any steps? Enter numbers separated by commas, or press Enter for none."
+echo ""
+echo "  [1] macOS config    — dark mode, wallpaper, resolution, dock settings"
+echo "  [2] SSH setup       — generate SSH keys and configure GitHub hosts"
+echo "  [3] Brewfile apps   — install all brew/cask packages"
+echo "  [4] App Store apps  — install mas apps (requires Apple ID auth per app)"
+echo "  [5] Dock layout     — arrange app icons in the Dock"
+echo "  [6] Claude CLI      — install Claude Code command line tool"
+echo ""
+read -rp "  Steps to skip [none]: " SKIP_STEPS < /dev/tty
+
+# Parse skip steps into array
+SKIP=()
+if [ -n "$SKIP_STEPS" ]; then
+  IFS=',' read -ra SKIP <<< "$SKIP_STEPS"
+fi
+
+should_skip() {
+  local step="$1"
+  for s in "${SKIP[@]}"; do
+    s="${s// /}"  # trim spaces
+    [[ "$s" == "$step" ]] && return 0
+  done
+  return 1
+}
+
+# ---------------------------------
 # Install Homebrew if missing
 # ---------------------------------
 
@@ -152,9 +183,13 @@ fi
 
 step "Configuring macOS"
 
-if [[ -f "$DOTFILES_DIR/macos/macos.sh" ]]; then
-  log "Applying macOS configuration..."
-  DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/macos/macos.sh"
+if should_skip 1; then
+  warn "Skipping macOS configuration."
+else
+  if [[ -f "$DOTFILES_DIR/macos/macos.sh" ]]; then
+    log "Applying macOS configuration..."
+    DOTFILES_DIR="$DOTFILES_DIR" bash "$DOTFILES_DIR/macos/macos.sh"
+  fi
 fi
 
 # ---------------------------------
@@ -163,7 +198,11 @@ fi
 
 step "Configuring SSH"
 
-DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
+if should_skip 2; then
+  warn "Skipping SSH setup."
+else
+  DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
+fi
 
 # ---------------------------------
 # Install Brewfile packages (with retry, excluding mas)
@@ -171,74 +210,77 @@ DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILE
 
 step "Installing packages"
 
-log "Checking Brewfile.$DOTFILES_PROFILE packages..."
+if should_skip 3; then
+  warn "Skipping Brewfile packages."
+else
+  log "Checking Brewfile.$DOTFILES_PROFILE packages..."
 
-# Create a temp Brewfile without mas lines for the retry loop
-BREWFILE_NO_MAS="/tmp/Brewfile.no-mas.tmp"
-grep -v "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > "$BREWFILE_NO_MAS"
+  grep -v "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > /tmp/Brewfile.nocask.tmp
 
-MAX_ATTEMPTS=3
-ATTEMPT=1
-BREW_SUCCESS=false
+  MAX_ATTEMPTS=3
+  ATTEMPT=1
 
-while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-  if brew bundle check --file="$BREWFILE_NO_MAS" 2>/dev/null; then
-    ok "All brew/cask packages satisfied."
-    BREW_SUCCESS=true
-    break
-  else
-    log "Installing brew/cask packages (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
-    if brew bundle --file="$BREWFILE_NO_MAS"; then
-      ok "brew/cask packages installed."
-      BREW_SUCCESS=true
+  while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+    if brew bundle check --file="/tmp/Brewfile.nocask.tmp" 2>/dev/null; then
+      ok "All brew/cask dependencies satisfied."
       break
     else
-      if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-        warn "Some packages failed — retrying in 5 seconds... ($ATTEMPT/$MAX_ATTEMPTS)"
-        sleep 5
+      log "Installing brew/cask packages (attempt $ATTEMPT/$MAX_ATTEMPTS)..."
+      if brew bundle --file="/tmp/Brewfile.nocask.tmp"; then
+        ok "brew/cask packages installed."
+        break
       else
-        warn "Some packages failed after $MAX_ATTEMPTS attempts."
-        warn "To retry manually: brew bundle --file=$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
+        if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+          warn "Some packages failed — retrying in 5 seconds... ($ATTEMPT/$MAX_ATTEMPTS)"
+          sleep 5
+        else
+          warn "Some packages failed after $MAX_ATTEMPTS attempts."
+          warn "To retry: brew bundle --file=$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE"
+        fi
       fi
     fi
-  fi
-  ATTEMPT=$((ATTEMPT + 1))
-done
+    ATTEMPT=$((ATTEMPT + 1))
+  done
 
-rm -f "$BREWFILE_NO_MAS"
+  rm -f /tmp/Brewfile.nocask.tmp
+fi
 
 # ---------------------------------
 # Install mas apps (App Store) with confirmation
 # ---------------------------------
 
-log "Checking App Store apps..."
-
-MAS_APPS=$(grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" | sed 's/mas "\(.*\)", id:.*/\1/')
-
-if [ -n "$MAS_APPS" ]; then
-  echo ""
-  echo "  The following App Store apps will be installed:"
-  echo ""
-  echo "$MAS_APPS" | while read -r app; do
-    echo "    - $app"
-  done
-  echo ""
-  read -rp "  Install App Store apps? (Y/n): " mas_confirm < /dev/tty
-
-  if [[ "$mas_confirm" != "n" && "$mas_confirm" != "N" ]]; then
-    log "Installing App Store apps..."
-    grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > /tmp/Brewfile.mas.tmp
-    if brew bundle --file=/tmp/Brewfile.mas.tmp; then
-      ok "App Store apps installed."
-    else
-      warn "Some App Store apps failed — install manually from the App Store."
-    fi
-    rm -f /tmp/Brewfile.mas.tmp
-  else
-    warn "Skipping App Store apps — install manually from the App Store when ready."
-  fi
+if should_skip 4 || should_skip 3; then
+  warn "Skipping App Store apps."
 else
-  ok "No App Store apps in this profile."
+  log "Checking App Store apps..."
+
+  MAS_APPS=$(grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" | sed 's/mas "\(.*\)", id:.*/\1/')
+
+  if [ -n "$MAS_APPS" ]; then
+    echo ""
+    echo "  The following App Store apps will be installed:"
+    echo ""
+    echo "$MAS_APPS" | while read -r app; do
+      echo "    - $app"
+    done
+    echo ""
+    read -rp "  Install App Store apps? (Y/n): " mas_confirm < /dev/tty
+
+    if [[ "$mas_confirm" != "n" && "$mas_confirm" != "N" ]]; then
+      log "Installing App Store apps..."
+      grep "^mas " "$DOTFILES_DIR/Brewfile.$DOTFILES_PROFILE" > /tmp/Brewfile.mas.tmp
+      if brew bundle --file=/tmp/Brewfile.mas.tmp; then
+        ok "App Store apps installed."
+      else
+        warn "Some App Store apps failed — install manually from the App Store."
+      fi
+      rm -f /tmp/Brewfile.mas.tmp
+    else
+      warn "Skipping App Store apps — install manually from the App Store when ready."
+    fi
+  else
+    ok "No App Store apps in this profile."
+  fi
 fi
 
 # ---------------------------------
@@ -247,15 +289,19 @@ fi
 
 step "Configuring Dock"
 
-if command -v dockutil &> /dev/null; then
-  log "Configuring Dock layout..."
-  case "${DOTFILES_PROFILE:-both}" in
-    personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
-    work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
-    *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
-  esac
+if should_skip 5; then
+  warn "Skipping Dock layout."
 else
-  warn "dockutil not found — skipping Dock layout."
+  if command -v dockutil &> /dev/null; then
+    log "Configuring Dock layout..."
+    case "${DOTFILES_PROFILE:-both}" in
+      personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
+      work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
+      *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
+    esac
+  else
+    warn "dockutil not found — skipping Dock layout."
+  fi
 fi
 
 # ---------------------------------
@@ -264,12 +310,16 @@ fi
 
 step "Installing Claude Code CLI"
 
-if ! command -v claude &> /dev/null; then
-  log "Installing Claude Code CLI..."
-  curl -fsSL https://claude.ai/install.sh | bash
-  ok "Claude Code CLI installed."
+if should_skip 6; then
+  warn "Skipping Claude Code CLI installation."
 else
-  ok "Claude Code CLI already installed."
+  if ! command -v claude &> /dev/null; then
+    log "Installing Claude Code CLI..."
+    curl -fsSL https://claude.ai/install.sh | bash
+    ok "Claude Code CLI installed."
+  else
+    ok "Claude Code CLI already installed."
+  fi
 fi
 
 # ---------------------------------
