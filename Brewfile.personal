@@ -110,6 +110,7 @@ cask "surfshark"
 ############################################
 
 cask "megasync"        # MEGA cloud storage client
+cask "stats"                               # system monitor in menu bar
 
 ############################################
 # Mac App Store Applications

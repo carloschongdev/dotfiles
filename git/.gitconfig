@@ -1,6 +1,6 @@
 [user]
   name  = Carlos Chong
-  email = carloschong28@hotmail.com
+  email = carlos.chong@intechideas.com
 
 [core]
   editor = nano
@@ -12,11 +12,6 @@
 [init]
   defaultBranch = main
 
-[url "git@github.com:"]
-  insteadOf = https://github.com/
-
-[includeIf "gitdir:~/Projects/Intechideas-International/"]
-  path = ~/.gitconfig-work
 
 [alias]
 	ac = !git add -A && git commit
