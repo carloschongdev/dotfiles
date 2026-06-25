@@ -71,6 +71,6 @@ add_app "/Applications/Linear.app"
 dockutil --add '' --type spacer --no-restart
 dockutil --add ~/Downloads --view fan --display stack
 
-killall Dock
+killall Dock 2>/dev/null || true
 
 ok "Dock configured (work)."

@@ -221,7 +221,7 @@ defaults write com.apple.Terminal "Startup Window Settings" -string "Pro"
 ok "Terminal.app set to Pro profile."
 
 # Restart Finder & Dock to apply settings
-killall Finder
-killall Dock
+killall Finder 2>/dev/null || true
+killall Dock 2>/dev/null || true
 
 ok "macOS configuration complete."
