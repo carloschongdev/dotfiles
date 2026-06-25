@@ -39,11 +39,13 @@ if [[ -z "${DOTFILES_PROFILE:-}" ]]; then
   echo "  [1] personal — single Mac for personal use"
   echo "  [2] work     — single Mac for work only"
   echo "  [3] both     — personal + work on same Mac (default)"
+  echo "  [4] test     — custom identity for testing purposes"
   echo ""
-  read -rp "  Profile choice [1/2/3]: " _choice < /dev/tty || true
+  read -rp "  Profile choice [1/2/3/4]: " _choice < /dev/tty || true
   case "${_choice:-3}" in
     1) DOTFILES_PROFILE="personal" ;;
     2) DOTFILES_PROFILE="work" ;;
+    4) DOTFILES_PROFILE="test" ;;
     *) DOTFILES_PROFILE="both" ;;
   esac
 fi
@@ -61,7 +63,7 @@ log "Generating profile-specific config files..."
 cp "$DOTFILES_DIR/profiles/gitconfig-$DOTFILES_PROFILE" "$DOTFILES_DIR/git/.gitconfig"
 ok "gitconfig set for profile: $DOTFILES_PROFILE"
 
-if [[ "$DOTFILES_PROFILE" == "both" ]]; then
+if [[ "$DOTFILES_PROFILE" == "both" || "$DOTFILES_PROFILE" == "test" ]]; then
   cp "$DOTFILES_DIR/zsh/.zshrc-both" "$DOTFILES_DIR/zsh/.zshrc"
 else
   cp "$DOTFILES_DIR/zsh/.zshrc-base" "$DOTFILES_DIR/zsh/.zshrc"
@@ -297,6 +299,7 @@ else
     case "${DOTFILES_PROFILE:-both}" in
       personal) bash "$DOTFILES_DIR/macos/dock-personal.sh" ;;
       work)     bash "$DOTFILES_DIR/macos/dock-work.sh" ;;
+      test)     bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
       *)        bash "$DOTFILES_DIR/macos/dock-both.sh" ;;
     esac
   else

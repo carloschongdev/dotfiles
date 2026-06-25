@@ -1,0 +1,127 @@
+############################################
+# Core CLI Tools
+############################################
+
+brew "bash"
+brew "git"
+brew "stow"
+brew "tree"
+
+############################################
+# DevOps CLI Tools
+############################################
+
+brew "gh"              # GitHub CLI
+brew "ghorg"           # clone all repos in a GitHub org
+brew "kubernetes-cli"  # kubectl
+brew "k9s"             # Kubernetes terminal UI
+brew "jq"              # JSON processor
+brew "ripgrep"         # fast search tool (rg)
+
+############################################
+# Terminal Productivity Tools
+############################################
+
+brew "starship"        # modern shell prompt
+brew "fzf"             # fuzzy finder
+brew "zoxide"          # smarter cd
+brew "bat"             # better cat
+brew "eza"             # better ls
+brew "fastfetch"       # system info
+brew "mole"            # SSH tunneling helper
+brew "dockutil"        # automate macOS Dock
+brew "displayplacer"   # set display resolution by model
+brew "git-delta"       # improved diff with syntax highlighting
+brew "tldr"            # simplified man pages
+brew "httpie"          # user-friendly HTTP client
+brew "lazygit"         # terminal git UI
+
+############################################
+# Node / JavaScript
+############################################
+
+brew "nvm"             # Node.js version manager
+
+############################################
+# macOS App Store CLI
+############################################
+
+brew "mas"
+
+############################################
+# Fonts
+############################################
+
+cask "font-jetbrains-mono-nerd-font"
+
+############################################
+# Development Applications
+############################################
+
+cask "visual-studio-code"
+cask "docker-desktop"
+cask "linear"
+cask "claude"
+cask "chatgpt"         # AI assistant client
+cask "bruno"           # open-source REST/GraphQL client
+cask "obsidian"        # markdown note-taking
+
+############################################
+# Browsers
+############################################
+
+cask "google-chrome"
+cask "brave-browser"
+
+############################################
+# Terminal
+############################################
+
+cask "ghostty"
+
+############################################
+# Utilities
+############################################
+
+cask "appcleaner"
+cask "rectangle"
+cask "raycast"         # launcher, clipboard history, snippets
+cask "imageoptim"      # image compression
+cask "maccy"           # clipboard manager
+cask "inkscape"        # vector graphics editor
+cask "whatsapp"
+cask "the-unarchiver"
+
+############################################
+# Media
+############################################
+
+cask "spotify"
+cask "vlc"
+
+############################################
+# VPN
+############################################
+
+cask "surfshark"
+
+############################################
+# Cloud Storage
+############################################
+
+cask "megasync"        # MEGA cloud storage client
+cask "stats"                               # system monitor in menu bar
+
+############################################
+# Communication
+############################################
+
+
+############################################
+# Mac App Store Applications
+############################################
+
+mas "Hidden Bar", id: 1452453066
+mas "WidgetWall", id: 1618466427
+mas "CleanMyKeyboard", id: 6468120888
+mas "Brother iPrint&Scan", id: 1193539993
