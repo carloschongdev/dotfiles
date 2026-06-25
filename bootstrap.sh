@@ -40,7 +40,7 @@ if [[ -z "${DOTFILES_PROFILE:-}" ]]; then
   echo "  [2] work     — single Mac for work only"
   echo "  [3] both     — personal + work on same Mac (default)"
   echo ""
-  read -rp "  Profile choice [1/2/3]: " _choice < /dev/tty
+  read -rp "  Profile choice [1/2/3]: " _choice < /dev/tty || true
   case "${_choice:-3}" in
     1) DOTFILES_PROFILE="personal" ;;
     2) DOTFILES_PROFILE="work" ;;
@@ -82,7 +82,7 @@ echo "  [4] App Store apps  — install mas apps (requires Apple ID auth per app
 echo "  [5] Dock layout     — arrange app icons in the Dock"
 echo "  [6] Claude CLI      — install Claude Code command line tool"
 echo ""
-read -rp "  Steps to skip [none]: " SKIP_STEPS < /dev/tty
+read -rp "  Steps to skip [none]: " SKIP_STEPS < /dev/tty || true
 
 # Parse skip steps into array
 SKIP=()
@@ -92,7 +92,7 @@ fi
 
 should_skip() {
   local step="$1"
-  for s in "${SKIP[@]}"; do
+  for s in "${SKIP[@]+"${SKIP[@]}"}"; do
     s="${s// /}"  # trim spaces
     [[ "$s" == "$step" ]] && return 0
   done
@@ -264,7 +264,7 @@ else
       echo "    - $app"
     done
     echo ""
-    read -rp "  Install App Store apps? (Y/n): " mas_confirm < /dev/tty
+    read -rp "  Install App Store apps? (Y/n): " mas_confirm < /dev/tty || true
 
     if [[ "$mas_confirm" != "n" && "$mas_confirm" != "N" ]]; then
       log "Installing App Store apps..."
