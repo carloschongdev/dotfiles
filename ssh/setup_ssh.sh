@@ -149,6 +149,7 @@ open('$HOME/.ssh/config', 'w').write(cleaned.strip() + '\n' if cleaned.strip() e
   # Ask for new identity
   echo ""
   read -rp "  GitHub username: " TEST_USERNAME < /dev/tty || true
+  TEST_USERNAME=$(echo "$TEST_USERNAME" | tr '[:upper:]' '[:lower:]')
   read -rp "  Git name (full name): " TEST_NAME < /dev/tty || true
   read -rp "  Git email: " TEST_EMAIL < /dev/tty || true
 
@@ -160,6 +161,11 @@ open('$HOME/.ssh/config', 'w').write(cleaned.strip() + '\n' if cleaned.strip() e
     ok "Git identity set: $TEST_NAME <$TEST_EMAIL>"
 
     TEST_KEY_NAME="id_${TEST_USERNAME}"
+
+    cat > /tmp/dotfiles_test_identity.tmp <<EOF
+PROFILE_GIT_EMAIL="$TEST_EMAIL"
+PROFILE_SSH_KEYS=("$TEST_KEY_NAME")
+EOF
 
     key_path="$HOME/.ssh/$TEST_KEY_NAME"
     if [ ! -f "$key_path" ]; then

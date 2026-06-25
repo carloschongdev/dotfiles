@@ -15,6 +15,13 @@ add_app() {
   fi
 }
 
+# Reset Dock completely before configuring
+log "Resetting Dock..."
+defaults delete com.apple.dock persistent-apps 2>/dev/null || true
+defaults delete com.apple.dock persistent-others 2>/dev/null || true
+killall Dock 2>/dev/null || true
+sleep 2
+
 # Clear Dock
 dockutil --remove all --no-restart
 

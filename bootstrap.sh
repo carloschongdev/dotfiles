@@ -204,6 +204,11 @@ if should_skip 2; then
   warn "Skipping SSH setup."
 else
   DOTFILES_DIR="$DOTFILES_DIR" DOTFILES_PROFILE="$DOTFILES_PROFILE" bash "$DOTFILES_DIR/ssh/setup_ssh.sh"
+
+  if [[ "$DOTFILES_PROFILE" == "test" ]] && [ -f /tmp/dotfiles_test_identity.tmp ]; then
+    source /tmp/dotfiles_test_identity.tmp
+    rm -f /tmp/dotfiles_test_identity.tmp
+  fi
 fi
 
 # ---------------------------------
