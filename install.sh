@@ -31,7 +31,10 @@ if [ ! -d "$HOME/dotfiles" ]; then
   echo "Cloning dotfiles..."
   git clone https://github.com/carloschongdev/dotfiles.git "$HOME/dotfiles"
 else
-  echo "Dotfiles repo already exists."
+  echo "Dotfiles repo already exists — pulling latest changes..."
+  git -C "$HOME/dotfiles" pull --rebase origin main 2>/dev/null || {
+    echo "Could not pull latest changes — continuing with local version."
+  }
 fi
 
 # ---------------------------------
