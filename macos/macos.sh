@@ -110,8 +110,10 @@ ok "Keyboard repeat rate set."
 # Finder
 # ---------------------------------
 
-defaults write com.apple.finder AppleShowAllFiles -bool true
+#defaults write com.apple.finder AppleShowAllFiles -bool true
 defaults write com.apple.finder ShowPathbar -bool true
+defaults write com.apple.finder FXPreferredViewStyle -string "icnv"
+defaults write com.apple.finder FXArrangeGroupViewBy -string "name"
 ok "Finder configured."
 
 # ---------------------------------
