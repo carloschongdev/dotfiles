@@ -1,2 +1,0 @@
-volume=50
-alert_volume=default

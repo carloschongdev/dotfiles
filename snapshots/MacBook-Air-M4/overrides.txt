@@ -1,3 +1,0 @@
-com.apple.dock|autohide|0|Dock autohide
-com.apple.finder|AppleShowAllFiles|1|Finder show hidden files
-com.apple.finder|FXPreferredViewStyle|Nlsv|Finder view style

@@ -1,7 +1,0 @@
-  mode 11: res:2048x1332 hz:60 color_depth:8 <-- current mode
-  mode 12: res:2560x1600 hz:60 color_depth:8
-  mode 13: res:2560x1664 hz:60 color_depth:8
---
-  mode 48: res:1920x1080 hz:75 color_depth:8 <-- current mode
-  mode 49: res:1920x1080 hz:60 color_depth:8
-  mode 50: res:1920x1080 hz:50 color_depth:8

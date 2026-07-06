@@ -1,2 +1,0 @@
-key_repeat=2
-initial_key_repeat=15

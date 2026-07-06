@@ -1,3 +1,0 @@
-reduce_motion=default
-reduce_transparency=default
-increase_contrast=default
