@@ -199,7 +199,7 @@ dotsnapshot
 bash ~/dotfiles/scripts/snapshot.sh
 ```
 
-The snapshot is saved to `snapshots/LATEST/` (always overwrites — it's a current-state snapshot, not a history). Commit it so it's available when you clone on the new machine:
+Each machine gets its own snapshot directory named by model and chip — e.g. `snapshots/MacBook-Air-M4/`. Running `dotsnapshot` again on the same machine overwrites its snapshot (current state, not history). Multiple machines each keep their own snapshot in the repo. Commit after snapshotting so it's available when you clone on the new machine:
 
 ```bash
 cd ~/dotfiles
@@ -218,7 +218,7 @@ dotrestore
 bash ~/dotfiles/scripts/restore.sh
 ```
 
-It applies everything it can automatically, then prints a three-section report:
+It lists all available machine snapshots and prompts you to choose one — useful when migrating from a specific old machine or when you have multiple machines in the repo. It then applies everything it can automatically and prints a three-section report:
 
 | Section | Meaning |
 |---------|---------|

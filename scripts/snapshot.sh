@@ -4,7 +4,12 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 source "$DOTFILES_DIR/lib/logging.sh"
 
-SNAPSHOT_DIR="$DOTFILES_DIR/snapshots/LATEST"
+# Get a clean machine identifier: "MacBook-Air-M4", "MacBook-Pro-M1", etc.
+MACHINE_MODEL=$(system_profiler SPHardwareDataType 2>/dev/null | grep "Model Name" | awk -F: '{print $2}' | xargs | tr ' ' '-')
+MACHINE_CHIP=$(sysctl -n machdep.cpu.brand_string 2>/dev/null | grep -oE "M[0-9]" | head -1)
+MACHINE_ID="${MACHINE_MODEL}-${MACHINE_CHIP}"
+
+SNAPSHOT_DIR="$DOTFILES_DIR/snapshots/$MACHINE_ID"
 rm -rf "$SNAPSHOT_DIR"
 mkdir -p "$SNAPSHOT_DIR"
 
@@ -251,6 +256,7 @@ echo "$SNAPSHOT_DATE" > "$SNAPSHOT_DIR/snapshot-date.txt"
 echo ""
 echo "================================================"
 ok "Snapshot complete! Saved to: $SNAPSHOT_DIR"
+echo "  Machine ID: $MACHINE_ID"
 echo "================================================"
 echo ""
 echo "  Next: review the files, then commit if you want to save this snapshot:"

@@ -4,10 +4,10 @@ set -euo pipefail
 DOTFILES_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
 source "$DOTFILES_DIR/lib/logging.sh"
 
-SNAPSHOT_DIR="$DOTFILES_DIR/snapshots/LATEST"
+SNAPSHOTS_ROOT="$DOTFILES_DIR/snapshots"
 
-if [ ! -d "$SNAPSHOT_DIR" ]; then
-  error "No snapshot found at $SNAPSHOT_DIR. Run scripts/snapshot.sh on the source machine first."
+if [ ! -d "$SNAPSHOTS_ROOT" ] || [ -z "$(ls -A "$SNAPSHOTS_ROOT" 2>/dev/null)" ]; then
+  error "No snapshots found in $SNAPSHOTS_ROOT. Run scripts/snapshot.sh on a source machine first."
   exit 1
 fi
 
@@ -16,6 +16,35 @@ echo "================================================"
 echo "  DOTFILES RESTORE"
 echo "================================================"
 echo ""
+echo "  Available snapshots:"
+echo ""
+
+mapfile -t SNAPSHOT_LIST < <(ls -1 "$SNAPSHOTS_ROOT")
+
+if [ ${#SNAPSHOT_LIST[@]} -eq 0 ]; then
+  error "No snapshots available."
+  exit 1
+fi
+
+for i in "${!SNAPSHOT_LIST[@]}"; do
+  SNAP_NAME="${SNAPSHOT_LIST[$i]}"
+  SNAP_DATE=$(cat "$SNAPSHOTS_ROOT/$SNAP_NAME/snapshot-date.txt" 2>/dev/null || echo "unknown date")
+  echo "  [$((i+1))] $SNAP_NAME — $SNAP_DATE"
+done
+
+echo ""
+read -rp "  Select snapshot to restore [1-${#SNAPSHOT_LIST[@]}]: " snap_choice < /dev/tty || true
+
+if [[ ! "$snap_choice" =~ ^[0-9]+$ ]] || [ "$snap_choice" -lt 1 ] || [ "$snap_choice" -gt ${#SNAPSHOT_LIST[@]} ]; then
+  error "Invalid selection."
+  exit 1
+fi
+
+SELECTED_SNAPSHOT="${SNAPSHOT_LIST[$((snap_choice-1))]}"
+SNAPSHOT_DIR="$SNAPSHOTS_ROOT/$SELECTED_SNAPSHOT"
+
+echo ""
+ok "Restoring from: $SELECTED_SNAPSHOT"
 echo "  Snapshot date: $(cat "$SNAPSHOT_DIR/snapshot-date.txt" 2>/dev/null || echo 'unknown')"
 echo ""
 
