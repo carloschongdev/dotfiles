@@ -5,6 +5,17 @@ DOTFILES_DIR="$HOME/dotfiles"
 
 source "$DOTFILES_DIR/lib/logging.sh"
 
+backup_gitconfig() {
+  if [ -f "$HOME/.gitconfig" ]; then
+    local backup_dir="$DOTFILES_DIR/backups/gitconfig"
+    mkdir -p "$backup_dir"
+    cp "$HOME/.gitconfig" "$backup_dir/gitconfig-$(date +%Y%m%d-%H%M%S).bak"
+    # Keep only last 2 backups
+    ls -t "$backup_dir"/gitconfig-*.bak 2>/dev/null | tail -n +3 | xargs rm -f 2>/dev/null || true
+    ok "Previous gitconfig backed up."
+  fi
+}
+
 # Progress tracking
 TOTAL_STEPS=10
 CURRENT_STEP=0
@@ -54,9 +65,13 @@ export DOTFILES_PROFILE
 log "Using profile: $DOTFILES_PROFILE"
 source "$DOTFILES_DIR/profiles/$DOTFILES_PROFILE.sh"
 
+BOOTSTRAP_START=$(date +%s)
+
 # ---------------------------------
 # Generate profile-specific config files
 # ---------------------------------
+
+backup_gitconfig
 
 log "Generating profile-specific config files..."
 
@@ -331,6 +346,20 @@ else
 fi
 
 # ---------------------------------
+# Bootstrap history log
+# ---------------------------------
+
+BOOTSTRAP_END=$(date +%s)
+BOOTSTRAP_DURATION=$((BOOTSTRAP_END - BOOTSTRAP_START))
+BOOTSTRAP_MINUTES=$((BOOTSTRAP_DURATION / 60))
+BOOTSTRAP_SECONDS=$((BOOTSTRAP_DURATION % 60))
+
+HISTORY_FILE="$DOTFILES_DIR/docs/bootstrap-history.log"
+mkdir -p "$DOTFILES_DIR/docs"
+
+echo "$(date '+%Y-%m-%d %H:%M:%S') | profile=$DOTFILES_PROFILE | host=$(hostname) | duration=${BOOTSTRAP_MINUTES}m${BOOTSTRAP_SECONDS}s" >> "$HISTORY_FILE"
+
+# ---------------------------------
 # Bootstrap summary
 # ---------------------------------
 
@@ -346,6 +375,7 @@ echo "  SSH keys : ${PROFILE_SSH_KEYS[*]}"
 echo "  gh user  : ${ACTIVE_GH:-not detected}"
 echo "  Hostname : $(hostname)"
 echo "  Date     : $(date '+%Y-%m-%d %H:%M:%S')"
+echo "  Duration : ${BOOTSTRAP_MINUTES}m ${BOOTSTRAP_SECONDS}s"
 echo "================================================"
 echo ""
 echo "  Next steps:"

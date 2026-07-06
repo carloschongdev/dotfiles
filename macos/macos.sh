@@ -20,10 +20,18 @@ osascript -e 'tell app "System Events" to tell appearance preferences to set dar
 log "Setting wallpaper..."
 
 WALLPAPER="$DOTFILES_DIR/macos/Wallpaper.png"
+WALLPAPER_BACKUP_DIR="$DOTFILES_DIR/backups/wallpapers"
 
 if [ -f "$WALLPAPER" ]; then
-  osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\""
-  ok "Wallpaper set from $WALLPAPER"
+  mkdir -p "$WALLPAPER_BACKUP_DIR"
+  if [ -f "$WALLPAPER_BACKUP_DIR/current.png" ]; then
+    if ! cmp -s "$WALLPAPER_BACKUP_DIR/current.png" "$WALLPAPER"; then
+      mv "$WALLPAPER_BACKUP_DIR/current.png" "$WALLPAPER_BACKUP_DIR/previous-$(date +%Y%m%d-%H%M%S).png" 2>/dev/null || true
+    fi
+  fi
+  cp "$WALLPAPER" "$WALLPAPER_BACKUP_DIR/current.png"
+
+  osascript -e "tell application \"System Events\" to tell every desktop to set picture to \"$WALLPAPER\"" 2>/dev/null && ok "Wallpaper set from $WALLPAPER" || warn "Could not set wallpaper."
 else
   warn "Wallpaper.png not found in macos/ — skipping."
   warn "To set a wallpaper, add Wallpaper.png to the macos/ folder."

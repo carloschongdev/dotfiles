@@ -8,3 +8,8 @@ Brewfile.*.lock.json
 
 # Machine-generated Dock state snapshot — reference only, not portable
 docs/dock-current.txt
+
+# Wallpaper backups are local only — not committed (can be large)
+backups/wallpapers/
+
+# Gitconfig and license backups ARE committed for portability across machines

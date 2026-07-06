@@ -47,6 +47,26 @@ ok "Homebrew updated."
 # 4. Upgrade packages
 # ---------------------------------
 
+log "Checking outdated packages..."
+OUTDATED=$(brew outdated 2>/dev/null || true)
+
+if [ -n "$OUTDATED" ]; then
+  echo ""
+  echo "  The following packages are outdated:"
+  echo ""
+  echo "$OUTDATED" | while read -r pkg; do
+    echo "    - $pkg"
+  done
+  echo ""
+  read -rp "  Upgrade all? (Y/n): " upgrade_confirm < /dev/tty || true
+  if [[ "$upgrade_confirm" == "n" || "$upgrade_confirm" == "N" ]]; then
+    warn "Skipping upgrade — run 'brew upgrade' manually when ready."
+    exit 0
+  fi
+else
+  ok "All packages are up to date."
+fi
+
 log "Upgrading packages..."
 brew upgrade --quiet
 ok "Packages upgraded."

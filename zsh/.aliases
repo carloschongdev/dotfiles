@@ -110,3 +110,5 @@ alias gclean='git branch --merged | grep -v "main\|master\|develop" | xargs git 
 
 alias dotcheck='bash ~/dotfiles/scripts/verify.sh'
 alias dotupdate='bash ~/dotfiles/scripts/update.sh'
+alias dotlicenses='bash ~/dotfiles/scripts/backup-licenses.sh'
+alias dothistory='cat ~/dotfiles/docs/bootstrap-history.log'
