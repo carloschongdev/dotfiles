@@ -1,0 +1,3 @@
+trackpad_speed=default
+mouse_speed=default
+tap_to_click=0
