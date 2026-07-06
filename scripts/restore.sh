@@ -29,7 +29,9 @@ fi
 for i in "${!SNAPSHOT_LIST[@]}"; do
   SNAP_NAME="${SNAPSHOT_LIST[$i]}"
   SNAP_DATE=$(cat "$SNAPSHOTS_ROOT/$SNAP_NAME/snapshot-date.txt" 2>/dev/null || echo "unknown date")
-  echo "  [$((i+1))] $SNAP_NAME — $SNAP_DATE"
+  # Extract machine ID without the timestamp suffix for cleaner display
+  MACHINE_LABEL=$(echo "$SNAP_NAME" | sed -E 's/-[0-9]{8}-[0-9]{6}$//')
+  echo "  [$((i+1))] $MACHINE_LABEL — $SNAP_DATE"
 done
 
 echo ""

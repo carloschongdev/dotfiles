@@ -199,7 +199,7 @@ dotsnapshot
 bash ~/dotfiles/scripts/snapshot.sh
 ```
 
-Each machine gets its own snapshot directory named by model and chip — e.g. `snapshots/MacBook-Air-M4/`. Running `dotsnapshot` again on the same machine overwrites its snapshot (current state, not history). Multiple machines each keep their own snapshot in the repo. Commit after snapshotting so it's available when you clone on the new machine:
+Each machine gets timestamped snapshot directories named by model, chip, and date — e.g. `snapshots/MacBook-Air-M4-20260701-091500/`. Each run creates a new snapshot; the oldest is automatically deleted once a machine has more than 3. Multiple machines each keep up to 3 snapshots in the repo. Commit after snapshotting so it's available when you clone on the new machine:
 
 ```bash
 cd ~/dotfiles

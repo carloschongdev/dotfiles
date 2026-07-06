@@ -8,10 +8,17 @@ source "$DOTFILES_DIR/lib/logging.sh"
 MACHINE_MODEL=$(system_profiler SPHardwareDataType 2>/dev/null | grep "Model Name" | awk -F: '{print $2}' | xargs | tr ' ' '-')
 MACHINE_CHIP=$(sysctl -n machdep.cpu.brand_string 2>/dev/null | grep -oE "M[0-9]" | head -1)
 MACHINE_ID="${MACHINE_MODEL}-${MACHINE_CHIP}"
+SNAPSHOT_TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 
-SNAPSHOT_DIR="$DOTFILES_DIR/snapshots/$MACHINE_ID"
-rm -rf "$SNAPSHOT_DIR"
+SNAPSHOT_DIR="$DOTFILES_DIR/snapshots/${MACHINE_ID}-${SNAPSHOT_TIMESTAMP}"
 mkdir -p "$SNAPSHOT_DIR"
+
+# Keep only the last 3 snapshots for this machine model, delete older ones
+log "Cleaning up old snapshots for $MACHINE_ID (keeping last 3)..."
+ls -1d "$DOTFILES_DIR/snapshots/${MACHINE_ID}-"* 2>/dev/null | sort -r | tail -n +4 | while read -r old_snapshot; do
+  rm -rf "$old_snapshot"
+  warn "  Removed old snapshot: $(basename "$old_snapshot")"
+done
 
 echo ""
 echo "================================================"
@@ -257,6 +264,7 @@ echo ""
 echo "================================================"
 ok "Snapshot complete! Saved to: $SNAPSHOT_DIR"
 echo "  Machine ID: $MACHINE_ID"
+echo "  Timestamp : $SNAPSHOT_TIMESTAMP"
 echo "================================================"
 echo ""
 echo "  Next: review the files, then commit if you want to save this snapshot:"

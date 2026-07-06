@@ -1,0 +1,24 @@
+user.name=Carlos Chong
+user.email=carlos.chong@intechideas.com
+core.editor=nano
+pull.rebase=true
+init.defaultbranch=main
+alias.ac=!git add -A && git commit
+alias.sync=!f() {
+files=$(git diff --name-only);
+if [ -z "$files" ]; then
+  echo "No changes to commit";
+  exit 0;
+fi;
+
+msg="update:";
+for f in $files; do
+  msg="$msg $f";
+done;
+
+git add -A;
+git commit -m "$msg";
+git pull --rebase origin main;
+git push origin main;
+}; f
+alias.smart-sync=!f(){ branch=$(git rev-parse --abbrev-ref HEAD); git add -A; files=$(git diff --cached --name-only | tr "\n" " "); if [ -n "$files" ]; then git commit -m "update: $files"; fi; git pull --rebase origin $branch; git push origin $branch; }; f
