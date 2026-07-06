@@ -1,5 +1,6 @@
 .DS_Store
 *.log
+!docs/bootstrap-history.log
 *.tmp
 
 # Brewfile lock — not committed; generated during brew bundle install

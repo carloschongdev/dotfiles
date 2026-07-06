@@ -182,6 +182,68 @@ cd ~/dotfiles
 bash bootstrap.sh
 ```
 
+## System Snapshot & Restore
+
+The snapshot system lets you capture the current state of a Mac and restore it on a new machine after running bootstrap.
+
+### What `dotsnapshot` captures
+
+- **Overrides** — `defaults` keys that differ from what `macos/macos.sh` sets (only what you changed manually after bootstrap)
+- **Everything without a bootstrap baseline** — installed apps (Brewfile dump), VS Code extensions, Dock layout, Login Items, Launch Agents, display resolution, trackpad/mouse/keyboard settings, sound, accessibility, WiFi network names, energy settings, language/region, git config, NVM versions
+
+Run it on the source machine before wiping or replacing it:
+
+```bash
+dotsnapshot
+# or
+bash ~/dotfiles/scripts/snapshot.sh
+```
+
+The snapshot is saved to `snapshots/LATEST/` (always overwrites — it's a current-state snapshot, not a history). Commit it so it's available when you clone on the new machine:
+
+```bash
+cd ~/dotfiles
+git add snapshots/
+git commit -m "chore: update system snapshot"
+git push origin main
+```
+
+### What `dotrestore` does
+
+Run it on the new machine **after** the normal `bootstrap.sh`:
+
+```bash
+dotrestore
+# or
+bash ~/dotfiles/scripts/restore.sh
+```
+
+It applies everything it can automatically, then prints a three-section report:
+
+| Section | Meaning |
+|---------|---------|
+| ✓ Fully restored | Applied programmatically — no action needed |
+| ⚠ Partially restored | Reference file saved; manual step required |
+| ✗ Could not restore | Missing data or unrecoverable |
+
+### What can never be restored automatically
+
+| Item | Why | What to do |
+|------|-----|------------|
+| Keychain (passwords, tokens, certs) | macOS security restriction | Re-authenticate in each app |
+| Paid app licenses (non-Surfshark) | No export API | Re-enter license keys from email |
+| WiFi passwords | Not exportable from Keychain | Re-enter when connecting |
+| Login Items | macOS 13+ blocks programmatic addition | Add via System Settings > General > Login Items |
+| iCloud / Apple ID session | Account-bound | Sign in again |
+
+Surfshark config can be backed up separately with `dotlicenses`.
+
+### Recommended workflow when replacing a Mac
+
+1. On old Mac: `dotsnapshot` → commit → push
+2. On new Mac: run install script → `bootstrap.sh` → `dotrestore`
+3. Follow the ⚠ items in the restore report
+
 ## How Stow Works
 
 Each top-level folder (except `macos`, `lib`, `profiles`, `docs`) is a Stow package.
