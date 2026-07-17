@@ -14,3 +14,4 @@ docs/dock-current.txt
 backups/wallpapers/
 
 # Gitconfig and license backups ARE committed for portability across machines
+git/.gitconfig
