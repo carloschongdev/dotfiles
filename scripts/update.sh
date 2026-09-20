@@ -68,7 +68,9 @@ else
 fi
 
 log "Upgrading packages..."
-brew upgrade --quiet
+# --yes skips brew's own "Do you want to proceed with the upgrade?" prompt —
+# the user already confirmed above, so this avoids asking twice.
+brew upgrade --quiet --yes
 ok "Packages upgraded."
 
 # ---------------------------------
